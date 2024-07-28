@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TaskManagement.Client.Pages;
 using TaskManagement.Components;
 using TaskManagement.Components.Account;
 using TaskManagement.Data;
