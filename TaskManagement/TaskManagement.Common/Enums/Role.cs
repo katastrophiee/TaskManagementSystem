@@ -4,9 +4,9 @@ namespace TaskManagement.Common.Enums;
 
 public enum Role
 {
-    [Display(Name = "Task User")]
+    [Display(Name = "TaskUser")]
     TaskUser = 0,
 
-    [Display(Name = "Admin User")]
+    [Display(Name = "Admin")]
     Admin = 1,
 }
