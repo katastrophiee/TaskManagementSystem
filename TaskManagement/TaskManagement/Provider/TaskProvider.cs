@@ -87,4 +87,37 @@ public class TaskProvider(ITaskRepository taskRepository) : ITaskProvider
             return false;
         }
     }
+
+    public async Task<bool> UpdateTask(UpdateTaskRequest updateTaskRequest)
+    {
+        try
+        {
+            var task = await _taskRepository.GetById(updateTaskRequest.TaskId);
+            if (task is null)
+                return false;
+
+            if (updateTaskRequest.Name is not null)
+                task.Name = updateTaskRequest.Name;
+
+            if (updateTaskRequest.Description is not null)
+                task.Description = updateTaskRequest.Description;
+
+            if (updateTaskRequest.TaskListId is not null)
+                task.TaskListId = updateTaskRequest.TaskListId;
+
+            if (updateTaskRequest.GroupId is not null)
+                task.GroupId = updateTaskRequest.GroupId;
+
+            task.TaskStatus = updateTaskRequest.TaskStatus;
+
+            await _taskRepository.Update(task);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
 }
+

@@ -5,7 +5,6 @@ using TaskManagement.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using TaskManagement.Interface.Provider;
 using TaskManagement.DTO.Responses.Task;
-using TaskManagement.Components.Account;
 
 namespace TaskManagement.Components.Pages;
 

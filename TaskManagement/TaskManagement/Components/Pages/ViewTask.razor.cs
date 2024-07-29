@@ -6,12 +6,14 @@ using TaskManagement.DTO.Requests.Task;
 using TaskManagement.DTO.Responses.Group;
 using TaskManagement.DTO.Responses.TaskList;
 using TaskManagement.Interface.Provider;
-using Task = System.Threading.Tasks.Task;
 
 namespace TaskManagement.Components.Pages;
 
-public partial class AddTask
+public partial class ViewTask
 {
+    [Parameter]
+    public int TaskId { get; set; }
+
     [Inject]
     public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
@@ -22,24 +24,15 @@ public partial class AddTask
     public ITaskProvider TaskProvider { get; set; }
 
     [Inject]
-    public ITaskListProvider TaskListProvider { get; set; }
-
-    [Inject]
-    public IGroupProvider GroupProvider { get; set; }
-
-    [Inject]
     public NavigationManager NavigationManager { get; set; }
 
-    //TO DO - add listof task lists and groups to select from when assigning a task to either one
+    public UpdateTaskRequest UpdateTaskRequest { get; set; } = new();
 
-    [SupplyParameterFromForm]
-    private AddTaskRequest AddTaskRequest { get; set; } = new();
-
-    private string TaskListIdAsString;
-    private string GroupIdAsString;
 
     private ApplicationUser? User;
     private string? errorMessage;
+    private string TaskListIdAsString;
+    private string GroupIdAsString;
     private List<GetTaskListResponse> AvailableTaskLists = [];
     private List<GetGroupResponse> AvailableGroups = [];
 
@@ -50,22 +43,28 @@ public partial class AddTask
 
         User = await UserManager.FindByEmailAsync(userEmail);
 
-        AvailableTaskLists = await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id);
-
-        AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id);
+        await GetTask();
     }
 
-    private async Task AddNewTask()
+    private async Task GetTask()
     {
-        //TO DO - Add add group and task list page then try and assign
+        var task = await TaskProvider.GetTaskById(TaskId);
 
-        if (TaskListIdAsString is not null)
-            AddTaskRequest.TaskListId = int.Parse(TaskListIdAsString);
+        UpdateTaskRequest = task is null ? new() : new UpdateTaskRequest(task);
+    }
 
-        if (GroupIdAsString is not null)
-            AddTaskRequest.GroupId = int.Parse(GroupIdAsString);
+    private async Task UpdateTask()
+    {
+        UpdateTaskRequest.TaskId = TaskId;
 
-        AddTaskRequest.CreatedByUserId = User.Id;
-        var success = await TaskProvider.AddTask(AddTaskRequest);
+        var response = await TaskProvider.UpdateTask(UpdateTaskRequest);
+
+        if (response is false)
+        {
+            errorMessage = "Failed to update task";
+            return;
+        }
+
+        await GetTask();
     }
 }

@@ -10,4 +10,6 @@ public interface ITaskProvider
     Task<List<GetTaskResponse>?> GetTasksByUserId(string userId);
 
     Task<bool> AddTask(AddTaskRequest addTaskRequest);
+
+    Task<bool> UpdateTask(UpdateTaskRequest updateTaskRequest);
 }

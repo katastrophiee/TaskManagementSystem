@@ -1,31 +1,43 @@
-﻿@page "/AddTask"
+﻿@page "/ViewTask/taskId={taskId:int}"
+@rendermode InteractiveServer
 @using TaskManagement.Components.Account.Shared
+@using TaskManagement.Common.Utils
 
 @attribute [Authorize(Roles = "TaskUser")]
 
 <div class="section-header-container">
-    <h2>Add a new task</h2>
+    <h2>Add task</h2>
     <a href="">
         <button class="btn-primary">◀️ Home</button>
     </a>
+    <hr />
 </div>
 
-<hr />
-
 <div class="row">
-    <EditForm Model="AddTaskRequest" method="post" OnValidSubmit="AddNewTask" FormName="add-task">
+    <EditForm Model="UpdateTaskRequest" method="post" OnValidSubmit="UpdateTask" FormName="view-task">
         <DataAnnotationsValidator />
 
         <div class="form-floating mb-3">
-            <InputText @bind-Value="AddTaskRequest.Name" class="form-control" id="taskName" aria-required="true" placeholder="Task Name" />
+            <InputText @bind-Value="UpdateTaskRequest.Name" class="form-control" id="taskName" aria-required="true" placeholder="Task Name" />
             <label for="taskName" class="form-label">Task Name</label>
-            <ValidationMessage For="() => AddTaskRequest.Name" class="text-danger" />
+            <ValidationMessage For="() => UpdateTaskRequest.Name" class="text-danger" />
         </div>
 
         <div class="form-floating mb-3">
-            <InputTextArea @bind-Value="AddTaskRequest.Description" class="form-control" id="taskDescription" aria-required="true" placeholder="Task Description" />
+            <InputTextArea @bind-Value="UpdateTaskRequest.Description" class="form-control" id="taskDescription" aria-required="true" placeholder="Task Description" />
             <label for="taskDescription" class="form-label">Task Description</label>
-            <ValidationMessage For="() => AddTaskRequest.Description" class="text-danger" />
+            <ValidationMessage For="() => UpdateTaskRequest.Description" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputSelect id="taskList" @bind-Value="UpdateTaskRequest.TaskStatus" class="form-control" aria-required="true">
+                @foreach (var status in Enum.GetValues<Common.Enums.TaskStatus>())
+                {
+                    <option value="@status">@status.EnumDisplayName()</option>
+                }
+            </InputSelect>
+            <label for="taskList" class="form-label">Task status</label>
+            <ValidationMessage For="() => UpdateTaskRequest.TaskStatus" class="text-danger" />
         </div>
 
         <div class="form-floating mb-3">
@@ -53,7 +65,7 @@
         </div>
 
         <div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Add Task</button>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Update Task</button>
         </div>
     </EditForm>
 </div>

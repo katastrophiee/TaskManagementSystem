@@ -12,15 +12,14 @@ public class TaskRepository(ApplicationDbContext dbContext) : ITaskRepository
 
     public async Task<List<Common.Models.Task>> GetListByUserUsername(string username) => await _dbContext.Task.Where(t => t.CreatedByUserId == username).ToListAsync();
 
-    public async Task Update(Common.Models.Task user)
-    {
-        _dbContext.Task.Update(user);
-        await _dbContext.SaveChangesAsync();
-    }
-
     public async Task Add(Common.Models.Task task)
     {
         _dbContext.Task.Add(task);
+        await _dbContext.SaveChangesAsync();
+    }
+    public async Task Update(Common.Models.Task user)
+    {
+        _dbContext.Task.Update(user);
         await _dbContext.SaveChangesAsync();
     }
 }
