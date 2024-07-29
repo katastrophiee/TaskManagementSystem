@@ -1,7 +1,9 @@
 ﻿using TaskManagement.Common.Models;
+using TaskManagement.DTO.Requests.Task;
 using TaskManagement.DTO.Responses.Task;
 using TaskManagement.Interface.Provider;
 using TaskManagement.Interface.Repository;
+using Task = TaskManagement.Common.Models.Task;
 
 namespace TaskManagement.Provider;
 
@@ -30,7 +32,8 @@ public class TaskProvider(ITaskRepository taskRepository) : ITaskProvider
             {
                 Title = "An unknown error occured",
                 Description = $"An unknown error occured when trying to get task {taskId}",
-                StatusCode = StatusCodes.Status404NotFound
+                StatusCode = StatusCodes.Status404NotFound,
+                AdditionalDetails = ex.Message
             });
         }
     }
@@ -39,7 +42,7 @@ public class TaskProvider(ITaskRepository taskRepository) : ITaskProvider
     {
         try
         {
-            var tasks = await _taskRepository.GetListByUserUsername(userId);
+            var tasks = await _taskRepository.GetListByUserUsername(userId) ?? [];
 
             var response = tasks.Select(t => new GetTaskResponse(t));
 
@@ -47,14 +50,41 @@ public class TaskProvider(ITaskRepository taskRepository) : ITaskProvider
         }
         catch (Exception ex)
         {
-            return [
+            return 
+            [
                 new(new ErrorResponse()
                 {
                     Title = "An unknown error occured",
                     Description = $"An unknown error occured when trying to get tasks for this user",
-                    StatusCode = StatusCodes.Status404NotFound
+                    StatusCode = StatusCodes.Status404NotFound,
+                    AdditionalDetails = ex.Message
                 })
             ];
+        }
+    }
+
+    public async Task<bool> AddTask(AddTaskRequest addTaskRequest)
+    {
+        try
+        {
+            var task = new Task()
+            {
+                GroupId = addTaskRequest.GroupId,
+                TaskListId = addTaskRequest.TaskListId,
+                Name = addTaskRequest.Name,
+                Description = addTaskRequest.Description,
+                TaskStatus = Common.Enums.TaskStatus.New,
+                CreatedByUserId = addTaskRequest.CreatedByUserId,
+                CreatedOn = DateTime.Now
+            };
+
+            await _taskRepository.Add(task);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return false;
         }
     }
 }

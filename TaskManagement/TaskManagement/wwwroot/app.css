@@ -99,3 +99,31 @@ h1:focus {
         .task-table .primary:hover {
             background-color: #0056b3;
         }
+
+.section-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .section-header-container button {
+        margin-left: auto;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 20px;
+    }
+
+    .section-header-container a {
+        margin-left: auto;
+    }
+
+.back-button button {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+    padding: 5px 10px;
+}

@@ -1,4 +1,5 @@
-﻿using TaskManagement.DTO.Responses.Task;
+﻿using TaskManagement.DTO.Requests.Task;
+using TaskManagement.DTO.Responses.Task;
 
 namespace TaskManagement.Interface.Provider;
 
@@ -8,4 +9,5 @@ public interface ITaskProvider
 
     Task<List<GetTaskResponse>?> GetTasksByUserId(string userId);
 
+    Task<bool> AddTask(AddTaskRequest addTaskRequest);
 }

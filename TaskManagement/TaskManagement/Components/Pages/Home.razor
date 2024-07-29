@@ -1,12 +1,13 @@
 ﻿@page "/"
-@using TaskManagement.Components.Account.Shared
 @using TaskManagement.Common.Utils
+@rendermode InteractiveServer
 
 @attribute [Authorize(Roles = "TaskUser")]
 
 <PageTitle>Home</PageTitle>
 
-@if (User is null) {
+@if (User is null
+|| Tasks is null) {
     <Loading />
     return;
 }
@@ -22,10 +23,18 @@
     return;
 }
 
-<h1>Hello, @User.FirstName!</h1>
+<h1>Hello @User.FirstName!</h1>
 <br/>
-<h2>Your tasks</h2>
-<hr />
+
+<div class="section-header-container">
+    <h2>@User.FirstName's tasks</h2>
+    <a href="AddTask">
+        <button class="btn-primary">Add Task</button>
+    </a>
+    <hr />
+</div>
+<h5>These are tasks that are only visible to you. To change that, view it and share it with others!</h5>
+
 @if (Tasks is not null
 && Tasks.Any())
 {
@@ -49,9 +58,11 @@
                         <td>@task.Name</td>
                         <td>@task.Description</td>
                         <td>@task.TaskStatus.EnumDisplayName()</td>
-                        <td>@task.CreatedOn</td>
+                        <td>@task.CreatedOn.FormatDateTime()</td>
                         <td>
-                            <button class="primary">View</button>
+                            <a href="/ViewTask/taskId=@task.TaskId">
+                                <button class="primary">View</button>
+                            </a>
                         </td>
                     </tr>
                 }

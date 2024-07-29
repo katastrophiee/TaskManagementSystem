@@ -1,0 +1,57 @@
+﻿@page "/AddTask"
+@using TaskManagement.Components.Account.Shared
+
+<div class="section-header-container">
+    <h2>Add task</h2>
+    <button @onclick="RedirectToHome" class="btn-primary">Go to Home</button>
+    <hr />
+</div>
+<div class="row">
+    <div >
+        <section>
+            <EditForm Model="AddTaskRequest" method="post" OnValidSubmit="AddNewTask" FormName="add-task">
+                <DataAnnotationsValidator />
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="AddTaskRequest.Name" class="form-control" id="taskName" aria-required="true" placeholder="Task Name" />
+                    <label for="taskName" class="form-label">Task Name</label>
+                    <ValidationMessage For="() => AddTaskRequest.Name" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputTextArea @bind-Value="AddTaskRequest.Description" class="form-control" id="taskDescription" aria-required="true" placeholder="Task Description" />
+                    <label for="taskDescription" class="form-label">Task Description</label>
+                    <ValidationMessage For="() => AddTaskRequest.Description" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputSelect id="taskList" @bind-Value="TaskListIdAsString" class="form-control" aria-required="true">
+                        <option value="">None</option>
+                        @foreach (var taskList in AvailableTaskLists)
+                        {
+                            <option value="@taskList.TaskListId">@taskList.Name</option>
+                        }
+                    </InputSelect>
+                    <label for="taskList" class="form-label">Add to task list (optional)</label>
+                    <ValidationMessage For="() => TaskListIdAsString" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputSelect id="groups" @bind-Value="GroupIdAsString" class="form-control" aria-required="true">
+                        <option value="">None</option>
+                        @foreach (var group in AvailableGroups)
+                        {
+                            <option value="@group.GroupId">@group.Name</option>
+                        }
+                    </InputSelect>
+                    <label for="groups" class="form-label">Add to group (optional)</label>
+                    <ValidationMessage For="() => GroupIdAsString" class="text-danger" />
+                </div>
+
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Add Task</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>

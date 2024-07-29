@@ -42,12 +42,16 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 builder.Services.AddScoped<ITaskProvider, TaskProvider>();
+builder.Services.AddScoped<ITaskListProvider, TaskListProvider>();
+builder.Services.AddScoped<IGroupProvider, GroupProvider>();
 
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskListRepository, TaskListRepository>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.`
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();

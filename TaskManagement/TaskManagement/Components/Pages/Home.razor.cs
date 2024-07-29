@@ -5,6 +5,7 @@ using TaskManagement.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using TaskManagement.Interface.Provider;
 using TaskManagement.DTO.Responses.Task;
+using TaskManagement.Components.Account;
 
 namespace TaskManagement.Components.Pages;
 
@@ -18,6 +19,10 @@ public partial class Home
 
     [Inject]
     public ITaskProvider TaskProvider { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
 
     public ApplicationUser? User { get; set; }
     public List<GetTaskResponse>? Tasks { get; set; }

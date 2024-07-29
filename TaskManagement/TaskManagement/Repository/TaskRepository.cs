@@ -18,9 +18,9 @@ public class TaskRepository(ApplicationDbContext dbContext) : ITaskRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Add(Common.Models.Task user)
+    public async Task Add(Common.Models.Task task)
     {
-        _dbContext.Task.Add(user);
+        _dbContext.Task.Add(task);
         await _dbContext.SaveChangesAsync();
     }
 }
