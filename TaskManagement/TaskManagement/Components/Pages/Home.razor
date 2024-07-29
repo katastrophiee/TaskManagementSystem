@@ -1,7 +1,66 @@
 ﻿@page "/"
+@using TaskManagement.Components.Account.Shared
+@using TaskManagement.Common.Utils
+
+@attribute [Authorize(Roles = "TaskUser")]
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (User is null) {
+    <Loading />
+    return;
+}
 
-Welcome to your new app.
+@if (User.FirstName is null
+|| User.FirstName is null
+|| User.PhoneNumber is null)
+{
+    <h1>Welcome!</h1>
+    <p>
+        Please complete your <a href="Account/Manage">here</a> profile to continue.
+    </p>
+    return;
+}
+
+<h1>Hello, @User.FirstName!</h1>
+<br/>
+<h2>Your tasks</h2>
+<hr />
+@if (Tasks is not null
+&& Tasks.Any())
+{
+    <div>
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Task Status</th>
+                    <th>Created On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var task in Tasks)
+                {
+                    <tr>
+                        <td>@task.TaskId</td>
+                        <td>@task.Name</td>
+                        <td>@task.Description</td>
+                        <td>@task.TaskStatus.EnumDisplayName()</td>
+                        <td>@task.CreatedOn</td>
+                        <td>
+                            <button class="primary">View</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+else
+{
+    <p>No tasks found.</p>
+}

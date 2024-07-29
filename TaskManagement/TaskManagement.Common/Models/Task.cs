@@ -7,6 +7,7 @@ public sealed class Task
     public int? TaskListId { get; set; }
     public string Name { get; set; }
     public string? Description { get; set; }
-    public int CreatedByUserId { get; set; }
+    public Enums.TaskStatus TaskStatus { get; set; }
+    public string CreatedByUserId { get; set; }
     public DateTime CreatedOn { get; set; }
 }

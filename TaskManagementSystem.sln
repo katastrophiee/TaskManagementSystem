@@ -5,35 +5,18 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement", "TaskManagement\TaskManagement\TaskManagement.csproj", "{C3930D31-D6D3-444D-967B-A6102F4131C2}"
 	ProjectSection(ProjectDependencies) = postProject
-		{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B} = {1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}
 		{2CBF345A-B562-4E97-80DE-4F227EE66C74} = {2CBF345A-B562-4E97-80DE-4F227EE66C74}
 		{B86FE289-4D2A-417C-985C-1BCCBA343221} = {B86FE289-4D2A-417C-985C-1BCCBA343221}
 		{C8B44179-A24C-4012-AA57-F8B006B9772B} = {C8B44179-A24C-4012-AA57-F8B006B9772B}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Client", "TaskManagement\TaskManagement.Client\TaskManagement.Client.csproj", "{C8DC4E0B-E09C-4FC1-99F5-6E3B1C2D318F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B} = {1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Common", "TaskManagement\TaskManagement.Common\TaskManagement.Common.csproj", "{C8B44179-A24C-4012-AA57-F8B006B9772B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.DTO", "TaskManagement\TaskManagement.DTO\TaskManagement.DTO.csproj", "{B86FE289-4D2A-417C-985C-1BCCBA343221}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Interface", "TaskManagement\TaskManagement.Interface\TaskManagement.Interface.csproj", "{2CBF345A-B562-4E97-80DE-4F227EE66C74}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Provider", "TaskManagement\TaskManagement.Provider\TaskManagement.Provider.csproj", "{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B86FE289-4D2A-417C-985C-1BCCBA343221} = {B86FE289-4D2A-417C-985C-1BCCBA343221}
-		{C8B44179-A24C-4012-AA57-F8B006B9772B} = {C8B44179-A24C-4012-AA57-F8B006B9772B}
-	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Repository", "TaskManagement\TaskManagement.Repository\TaskManagement.Repository.csproj", "{A3047D63-EA68-4321-B4A5-C1C3AB4A7EFF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B} = {1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}
-		{B86FE289-4D2A-417C-985C-1BCCBA343221} = {B86FE289-4D2A-417C-985C-1BCCBA343221}
-		{C8B44179-A24C-4012-AA57-F8B006B9772B} = {C8B44179-A24C-4012-AA57-F8B006B9772B}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement.Tests", "TaskManagement\TaskManagement.Tests\TaskManagement.Tests.csproj", "{E6F51D5E-59EB-4E3A-B2EA-F72F8417ED8B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -66,14 +49,6 @@ Global
 		{2CBF345A-B562-4E97-80DE-4F227EE66C74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CBF345A-B562-4E97-80DE-4F227EE66C74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CBF345A-B562-4E97-80DE-4F227EE66C74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E4E72D5-F77D-411F-9BA6-CD50E0DBB61B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A3047D63-EA68-4321-B4A5-C1C3AB4A7EFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3047D63-EA68-4321-B4A5-C1C3AB4A7EFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A3047D63-EA68-4321-B4A5-C1C3AB4A7EFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A3047D63-EA68-4321-B4A5-C1C3AB4A7EFF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E6F51D5E-59EB-4E3A-B2EA-F72F8417ED8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6F51D5E-59EB-4E3A-B2EA-F72F8417ED8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6F51D5E-59EB-4E3A-B2EA-F72F8417ED8B}.Release|Any CPU.ActiveCfg = Release|Any CPU

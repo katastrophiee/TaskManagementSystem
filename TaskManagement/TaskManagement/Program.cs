@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using TaskManagement.Components;
 using TaskManagement.Components.Account;
 using TaskManagement.Data;
+using TaskManagement.Interface.Provider;
+using TaskManagement.Interface.Repository;
+using TaskManagement.Provider;
+using TaskManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +40,10 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+builder.Services.AddScoped<ITaskProvider, TaskProvider>();
+
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 
 var app = builder.Build();
 
