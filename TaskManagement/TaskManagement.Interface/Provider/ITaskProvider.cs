@@ -1,6 +1,11 @@
-﻿namespace TaskManagement.Interface.Provider;
+﻿using TaskManagement.DTO.Responses.Task;
+
+namespace TaskManagement.Interface.Provider;
 
 public interface ITaskProvider
 {
-    Task<Common.Models.Task> GetTaskById(int taskId);
+    Task<GetTaskResponse?> GetTaskById(int taskId);
+
+    Task<List<GetTaskResponse>?> GetTasksByUserId(string userId);
+
 }

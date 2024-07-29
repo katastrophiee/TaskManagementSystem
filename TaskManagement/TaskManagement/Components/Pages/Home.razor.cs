@@ -4,6 +4,7 @@ using Task = System.Threading.Tasks.Task;
 using TaskManagement.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using TaskManagement.Interface.Provider;
+using TaskManagement.DTO.Responses.Task;
 
 namespace TaskManagement.Components.Pages;
 
@@ -19,7 +20,7 @@ public partial class Home
     public ITaskProvider TaskProvider { get; set; }
 
     public ApplicationUser? User { get; set; }
-    public List<Common.Models.Task>? Tasks { get; set; }
+    public List<GetTaskResponse>? Tasks { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,8 +29,8 @@ public partial class Home
 
         User = await UserManager.FindByEmailAsync(userEmail);
 
-        var task = await TaskProvider.GetTaskById(2) ?? new();
+        var userTasks = await TaskProvider.GetTasksByUserId(User.Id);
 
-        Tasks = [task];
+        Tasks = userTasks;
     }
 }
