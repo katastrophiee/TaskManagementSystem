@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <Folder Include="Requests\Group\" />
-    <Folder Include="Requests\TaskList\" />
   </ItemGroup>
 
 </Project>

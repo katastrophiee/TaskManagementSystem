@@ -119,5 +119,30 @@ public class TaskProvider(ITaskRepository taskRepository) : ITaskProvider
             return false;
         }
     }
+
+    public async Task<List<GetTaskResponse>?> GetTasksByTaskListId(int taskListId)
+    {
+        try
+        {
+            var tasks = await _taskRepository.GetListByTaskListId(taskListId) ?? [];
+
+            var response = tasks.Select(t => new GetTaskResponse(t));
+
+            return response.ToList();
+        }
+        catch (Exception ex)
+        {
+            return
+            [
+                new(new ErrorResponse()
+                {
+                    Title = "An unknown error occured",
+                    Description = $"An unknown error occured when trying to get tasks for task list {taskListId}",
+                    StatusCode = StatusCodes.Status404NotFound,
+                    AdditionalDetails = ex.Message
+                })
+            ];
+        }
+    }
 }
 

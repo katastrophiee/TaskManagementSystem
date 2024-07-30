@@ -9,4 +9,6 @@ public interface ITaskRepository
     Task Add(Common.Models.Task task);
 
     Task Update(Common.Models.Task task);
+
+    Task<List<Common.Models.Task>> GetListByTaskListId(int taskListId);
 }

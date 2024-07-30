@@ -9,4 +9,7 @@ public enum Role
 
     [Display(Name = "Admin")]
     Admin = 1,
+
+    [Display(Name = "ProfileCompleted")]
+    ProfileCompleted = 1,
 }

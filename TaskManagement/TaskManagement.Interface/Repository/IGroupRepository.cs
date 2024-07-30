@@ -4,5 +4,7 @@ namespace TaskManagement.Interface.Repository;
 
 public interface IGroupRepository
 {
-    Task<List<Group>?> GetOwnedOrJoinedGroups(string userId);
+    Task<List<Group>?> GetOwnedOrJoinedGroups(string userId, string userEmail);
+
+    Task<Group?> GetById(int groupId);
 }

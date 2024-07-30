@@ -50,9 +50,9 @@ public partial class AddTask
 
         User = await UserManager.FindByEmailAsync(userEmail);
 
-        AvailableTaskLists = await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id);
+        AvailableTaskLists = await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id, userEmail);
 
-        AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id);
+        AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id, userEmail);
     }
 
     private async Task AddNewTask()

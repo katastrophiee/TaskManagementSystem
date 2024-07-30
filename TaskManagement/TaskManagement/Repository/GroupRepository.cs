@@ -9,8 +9,10 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
 
-    public async Task<List<Group>?> GetOwnedOrJoinedGroups(string userId)
+    public async Task<List<Group>?> GetOwnedOrJoinedGroups(string userId, string userEmail)
     {
-        return await _dbContext.Group.Where(g => g.CreatedByUserId == userId || (g.ViewableToUserIds ?? "").Contains(userId)).ToListAsync();
+        return await _dbContext.Group.Where(g => g.CreatedByUserId == userId || (g.ViewableToUserIds ?? "").Contains(userEmail)).ToListAsync();
     }
+
+    public Task<Group?> GetById(int groupId) => _dbContext.Group.FirstOrDefaultAsync(g => g.GroupId == groupId);
 }

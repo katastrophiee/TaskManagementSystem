@@ -127,3 +127,36 @@ h1:focus {
     border-color: #1861ac;
     padding: 5px 10px;
 }
+
+.task-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 20px;
+}
+
+.task-item {
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 150px; /* Ensures the div is a square */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+    .task-item:hover {
+        transform: scale(1.05);
+    }
+
+.email-bubble {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px;
+    background-color: #e0e0e0;
+    border-radius: 15px;
+}

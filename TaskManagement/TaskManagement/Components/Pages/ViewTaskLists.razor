@@ -1,0 +1,90 @@
+﻿@page "/ViewTaskLists"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "TaskUser")]
+
+<PageTitle>Task Lists</PageTitle>
+
+@if (User is null)
+{
+    <Loading />
+    return;
+}
+
+@if (User.FirstName is null
+|| User.FirstName is null
+|| User.PhoneNumber is null)
+{
+    <h1 class="text-danger">You cannot add task lists until your profile is complete.</h1>
+    <h4>
+        Please complete your profile <a href="Account/Manage">here</a> to continue.
+    </h4>
+    return;
+}
+
+<h1>Task lists</h1>
+<hr />
+
+<br />
+
+<div class="section-header-container">
+    <h2>@User.FirstName's task lists</h2>
+    <a href="AddTaskList">
+        <button class="btn-primary">Add New Task List</button>
+    </a>
+</div>
+<h5>These are tasks lists created by you.</h5>
+<hr />
+
+@if (OwnedTaskLists is not null
+&& OwnedTaskLists.Any())
+{
+    @foreach (var taskList in OwnedTaskLists)
+    {
+        @if (taskList.GroupId is not null)
+        {
+            var group = GroupsContainingReturnedTaskLists.Where(g => g.GroupId == taskList.GroupId).FirstOrDefault();
+            <div>Part of group @group.Name</div>
+        }
+        <div class="task-list-container">
+            <h5>@taskList.Name</h5>
+            <h6>@taskList.Description</h6>
+            @foreach (var task in TasksInTaskLists?.Where(t => t.TaskListId == taskList.TaskListId) ?? [])
+            {
+                <div class="task-item">@task.Name</div>
+            }
+        </div>
+    }
+}
+else
+{
+    <p>No task lists found.</p>
+}
+
+<br />
+
+<div class="section-header-container">
+    <h2>Shared task lists</h2>
+</div>
+<h5>These are task list shared to you from other users</h5>
+<hr/>
+
+@if (SharedToMeUserTaskLists is not null
+&& SharedToMeUserTaskLists.Any())
+{
+    @foreach (var taskList in SharedToMeUserTaskLists)
+    {
+        <div class="task-list-container">
+            <h5>@taskList.Name</h5>
+            <h6>@taskList.Description</h6>
+            @foreach (var task in TasksInTaskLists?.Where(t => t.TaskListId == taskList.TaskListId) ?? [])
+            {
+                <div class="task-container">@task.Name</div>
+            }
+        </div>
+    }
+}
+else
+{
+    <p>No task lists shared to you.</p>
+}
+@* TO DO - add first name of user who shared maybe? *@

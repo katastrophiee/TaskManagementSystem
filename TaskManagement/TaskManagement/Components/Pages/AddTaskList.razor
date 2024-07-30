@@ -1,0 +1,64 @@
+﻿@page "/AddTaskList"
+@using TaskManagement.Components.Account.Shared
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "TaskUser")]
+
+<div class="section-header-container">
+    <h2>Add a new task list</h2>
+    <a href="">
+        <button class="btn-primary">◀️ Home</button>
+    </a>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="text-danger">@errorMessage</div>
+    <EditForm Model="AddTaskListRequest" OnValidSubmit="AddNewTaskList" FormName="add-task-list">
+        <DataAnnotationsValidator />
+
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="AddTaskListRequest.Name" class="form-control" id="taskListName" aria-required="true" placeholder="Task List Name" />
+            <label for="taskListName" class="form-label">Task Name</label>
+            <ValidationMessage For="() => AddTaskListRequest.Name" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputTextArea @bind-Value="AddTaskListRequest.Description" class="form-control" id="taskListDescription" aria-required="true" placeholder="Task List Description" />
+            <label for="taskListDescription" class="form-label">Task Description</label>
+            <ValidationMessage For="() => AddTaskListRequest.Description" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputSelect id="groups" @onchange="CorrectViewableToUsers" @bind-Value="GroupIdAsString" class="form-control" aria-required="true">
+                <option value="">None</option>
+                @foreach (var group in AvailableGroups)
+                {
+                    <option value="@group.GroupId">@group.Name</option>
+                }
+            </InputSelect>
+            <label for="groups" class="form-label">Add to group (optional)</label>
+            <ValidationMessage For="() => GroupIdAsString" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" /> @* @onkeydown="HandleKeyPress" *@
+            <button type="button" @onclick="ShareTaskListToUser">Add</button>
+        </div>
+
+        @if (sharedToUserEmails.Any())
+        {
+            <label class="form-label">Viewable to:</label>
+            <div class="form-floating mb-3">
+                @foreach (var email in sharedToUserEmails)
+                {
+                    <span class="email-bubble">@email</span>
+                }
+            </div>
+        }
+
+        <div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Add Task List</button>
+        </div>
+    </EditForm>
+</div>

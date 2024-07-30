@@ -1,8 +1,11 @@
-﻿using TaskManagement.DTO.Responses.TaskList;
+﻿using TaskManagement.DTO.Requests.TaskList;
+using TaskManagement.DTO.Responses.TaskList;
 
 namespace TaskManagement.Interface.Provider;
 
 public interface ITaskListProvider
 {
-    Task<List<GetTaskListResponse>> GetOwnedOrJoinedTaskLists(string userId);
+    Task<List<GetTaskListResponse>> GetOwnedOrJoinedTaskLists(string userId, string userEmail);
+
+    Task<bool> AddTaskList(AddTaskListRequest request);
 }
