@@ -17,6 +17,7 @@ public class UpdateTaskRequest
 
     public UpdateTaskRequest(GetTaskResponse task)
     {
+        TaskId = task.TaskId;
         GroupId = task.GroupId;
         TaskListId = task.TaskListId;
         Name = task.Name;

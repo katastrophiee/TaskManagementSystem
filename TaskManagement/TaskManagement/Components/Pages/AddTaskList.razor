@@ -50,9 +50,13 @@
         {
             <label class="form-label">Viewable to:</label>
             <div class="form-floating mb-3">
-                @foreach (var email in sharedToUserEmails)
+                @foreach (var emailWithState in sharedToUserEmails)
                 {
-                    <span class="email-bubble">@email</span>
+                    <span class="email-bubble">@emailWithState</span>
+                    @if (emailWithState.IsRemoveable)
+                    {
+                        <button type="button" @onclick="() => RemoveSharedToUser(emailWithState.Email)">Remove</button>
+                    }
                 }
             </div>
         }

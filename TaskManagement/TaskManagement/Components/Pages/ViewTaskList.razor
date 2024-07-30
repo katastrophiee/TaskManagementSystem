@@ -1,0 +1,85 @@
+﻿@page "/ViewTaskList/taskListId={taskListId:int}"
+@rendermode InteractiveServer
+@using TaskManagement.Components.Account.Shared
+@using TaskManagement.Common.Utils
+
+@attribute [Authorize(Roles = "TaskUser")]
+
+@if (User is null)
+{
+    <Loading />
+    return;
+}
+
+@if (User.FirstName is null
+|| User.FirstName is null
+|| User.PhoneNumber is null)
+{
+    <h1 class="text-danger">You cannot add task lists until your profile is complete.</h1>
+    <h4>
+        Please complete your profile <a href="Account/Manage">here</a> to continue.
+    </h4>
+    return;
+}
+
+<div class="section-header-container">
+    <h2>Add task list</h2>
+    <a href="">
+        <button class="btn-primary">◀️ Home</button>
+    </a>
+    <hr />
+</div>
+
+<div class="row">
+    <EditForm Model="UpdateTaskListRequest" method="post" OnValidSubmit="UpdateTaskList" FormName="view-task-list">
+        <DataAnnotationsValidator />
+
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="UpdateTaskListRequest.Name" class="form-control" id="taskName" aria-required="true" placeholder="Task Name" />
+            <label for="taskName" class="form-label">Task Name</label>
+            <ValidationMessage For="() => UpdateTaskListRequest.Name" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputTextArea @bind-Value="UpdateTaskListRequest.Description" class="form-control" id="taskDescription" aria-required="true" placeholder="Task Description" />
+            <label for="taskDescription" class="form-label">Task Description</label>
+            <ValidationMessage For="() => UpdateTaskListRequest.Description" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputSelect id="groups" @bind-Value="GroupIdAsString" @onchange="CorrectViewableToUsers" class="form-control" aria-required="true">
+                <option value="">None</option>
+                @foreach (var group in AvailableGroups)
+                {
+                    <option value="@group.GroupId">@group.Name</option>
+                }
+            </InputSelect>
+            <label for="groups" class="form-label">Add to group (optional)</label>
+            <ValidationMessage For="() => GroupIdAsString" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" />
+            <button type="button" @onclick="ShareTaskListToUser">Add</button>
+        </div>
+
+        @if (ViewableToUserEmails.Any())
+        {
+            <label class="form-label">Viewable to:</label>
+            <div class="form-floating mb-3">
+                @foreach (var emailWithState in ViewableToUserEmails)
+                {
+                    <span class="email-bubble">@emailWithState.Email</span>
+                    @if (emailWithState.IsRemoveable)
+                    {
+                        <button type="button" @onclick="() => RemoveSharedToUser(emailWithState.Email)">Remove</button>
+                    }
+                }
+            </div>
+        }
+
+        <div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Update Task</button>
+        </div>
+    </EditForm>
+</div>

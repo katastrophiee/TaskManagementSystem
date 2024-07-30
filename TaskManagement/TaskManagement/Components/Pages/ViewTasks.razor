@@ -1,0 +1,61 @@
+﻿@page "/ViewTasks"
+@rendermode InteractiveServer
+@using Common.Utils
+@attribute [Authorize(Roles = "TaskUser")]
+
+<PageTitle>Home</PageTitle>
+
+@if (User is null
+|| Tasks is null)
+{
+    <Loading />
+    return;
+}
+
+<div class="section-header-container">
+    <h2>@User.FirstName's tasks</h2>
+    <a href="AddTask">
+        <button class="btn-primary">Add Task</button>
+    </a>
+</div>
+<h5>These are tasks that are only visible to you. To change that, view it and share it with others!</h5>
+
+@if (Tasks is not null
+&& Tasks.Any())
+{
+    <div>
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Task Status</th>
+                    <th>Created On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var task in Tasks)
+                {
+                    <tr>
+                        <td>@task.TaskId</td>
+                        <td>@task.Name</td>
+                        <td>@task.Description</td>
+                        <td>@task.TaskStatus.EnumDisplayName()</td>
+                        <td>@task.CreatedOn.FormatDateTime()</td>
+                        <td>
+                            <a href="/ViewTask/taskId=@task.TaskId">
+                                <button class="primary">View</button>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No tasks found.</p>
+}

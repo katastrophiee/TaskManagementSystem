@@ -41,7 +41,7 @@
         </div>
 
         <div class="form-floating mb-3">
-            <InputSelect id="groups" @bind-Value="GroupIdAsString" class="form-control" aria-required="true">
+            <InputSelect id="groups" @onchange="CorrectSharedToUsersAndTaskListOptions" @bind-Value="GroupIdAsString" class="form-control" aria-required="true">
                 <option value="">None</option>
                 @foreach (var group in AvailableGroups)
                 {

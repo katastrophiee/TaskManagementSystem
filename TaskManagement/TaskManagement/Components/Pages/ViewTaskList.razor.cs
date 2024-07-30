@@ -1,18 +1,23 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using TaskManagement.Data;
+using TaskManagement.DTO.Requests.Task;
 using TaskManagement.DTO.Responses.Group;
+using TaskManagement.DTO.Responses.TaskList;
 using TaskManagement.Interface.Provider;
 using Microsoft.AspNetCore.Identity;
 using TaskManagement.DTO.Requests.TaskList;
-using Microsoft.AspNetCore.Components.Web;
+using TaskManagement.Provider;
 using TaskManagement.Components.Pages.PageModels;
-using TaskManagement.Components.Account.Pages.Manage;
+using System.Linq;
 
 namespace TaskManagement.Components.Pages;
 
-public partial class AddTaskList
+public partial class ViewTaskList
 {
+    [Parameter]
+    public int TaskListId { get; set; }
+
     [Inject]
     public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
@@ -28,17 +33,16 @@ public partial class AddTaskList
     [Inject]
     public NavigationManager NavigationManager { get; set; }
 
-    [SupplyParameterFromForm]
-    private AddTaskListRequest AddTaskListRequest { get; set; } = new();
+    public UpdateTaskListRequest UpdateTaskListRequest { get; set; } = new();
 
-    private string GroupIdAsString;
 
-    private ApplicationUser? User { get; set; }
-
+    private ApplicationUser? User;
     private string? errorMessage;
+    private string GroupIdAsString;
+    private string shareToUserEmail;
+    private ViewableToEmail[] ViewableToUserEmails = [];
+    private List<GetTaskListResponse> AvailableTaskLists = [];
     private List<GetGroupResponse> AvailableGroups = [];
-    private ViewableToEmail[] sharedToUserEmails = [];
-    private string shareToUserEmail = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,51 +51,53 @@ public partial class AddTaskList
 
         User = await UserManager.FindByEmailAsync(userEmail);
 
-        AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id, userEmail);
+        await GetTaskList();
     }
 
-    private async Task AddNewTaskList()
+
+    private async Task GetTaskList()
     {
-        //TO DO - Add add group and task list page then try and assign
+        var taskList = await TaskListProvider.GetTaskListById(TaskListId);
 
-        if (GroupIdAsString is not null)
-            AddTaskListRequest.GroupId = int.Parse(GroupIdAsString);
+        UpdateTaskListRequest = taskList is null ? new() : new UpdateTaskListRequest(taskList);
 
-        if (sharedToUserEmails.Length != 0)
-            AddTaskListRequest.ViewableToUserIds = string.Join(",", sharedToUserEmails.Select(x => x.Email).ToList());
-
-        AddTaskListRequest.CreatedByUserId = User.Id;
-        var success = await TaskListProvider.AddTaskList(AddTaskListRequest);
-
-        if (success)
-        {
-            NavigationManager.NavigateTo("/ViewTaskLists");
-        }
-        else
-        {
-            errorMessage = "An error occured when adding this task list. Please try again later.";
-        }
+        if (UpdateTaskListRequest is not null && UpdateTaskListRequest.ViewableToUserIds is not null && UpdateTaskListRequest.ViewableToUserIds.Any())
+            ViewableToUserEmails = UpdateTaskListRequest.ViewableToUserIds.Split(",").Select(e => new ViewableToEmail(e, UpdateTaskListRequest.GroupId is null)).ToArray();
     }
 
-    //if group is selected, lock the manual field and auto set the shared to users to the group members
+    private async Task UpdateTaskList()
+    {
+        UpdateTaskListRequest.TaskListId = TaskListId;
+        UpdateTaskListRequest.ViewableToUserIds = string.Join(",", ViewableToUserEmails.Select(e => e));
+
+        var response = await TaskListProvider.UpdateTaskList(UpdateTaskListRequest);
+
+        if (response is false)
+        {
+            errorMessage = "Failed to update task";
+            return;
+        }
+
+        await GetTaskList();
+    }
 
     private async Task ShareTaskListToUser()
     {
         if (shareToUserEmail == User.Email)
         {
-           errorMessage = "You cannot share a task list with yourself";
-            return;
-        }
-
-        if (sharedToUserEmails.Where(e => e.Email == shareToUserEmail).Any())
-        {
-            errorMessage = "You have already shared this task list with this user";
+            errorMessage = "You cannot share a task list with yourself";
             return;
         }
 
         if (GroupIdAsString is not null && !string.IsNullOrEmpty(GroupIdAsString))
         {
             errorMessage = "You cannot alter the shared with users if the task list is assigned to a group";
+            return;
+        }
+
+        if (ViewableToUserEmails.Select(e => e.Email == shareToUserEmail).Any())
+        {
+            errorMessage = "You have already shared this task list with this user";
             return;
         }
 
@@ -108,7 +114,7 @@ public partial class AddTaskList
             return;
         }
 
-        sharedToUserEmails = sharedToUserEmails.Append(new ViewableToEmail(shareToUserEmail, true)).ToArray();
+        ViewableToUserEmails = ViewableToUserEmails.Append(new ViewableToEmail(shareToUserEmail, true)).ToArray();
         shareToUserEmail = string.Empty;
         errorMessage = string.Empty;
     }
@@ -126,13 +132,18 @@ public partial class AddTaskList
         }
     }
 
+    private void RemoveSharedToUser(string email)
+    {
+        ViewableToUserEmails = ViewableToUserEmails.Where(e => e.Email != email).ToArray();
+    }
+
     private async Task<bool> CheckUserExists(string email)
     {
         try
         {
             var user = await UserManager.FindByEmailAsync(email);
-            return user is null 
-                ? false 
+            return user is null
+                ? false
                 : true;
         }
         catch (Exception)
@@ -140,6 +151,7 @@ public partial class AddTaskList
             return false;
         }
     }
+
 
     //TO DO - test this :)
     private async Task CorrectViewableToUsers()
@@ -153,13 +165,9 @@ public partial class AddTaskList
             {
                 var groupMembers = group.ViewableToUserIds.Split(",");
 
-                sharedToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
+                ViewableToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
             }
         }
     }
 
-    private void RemoveSharedToUser(string email)
-    {
-        sharedToUserEmails = sharedToUserEmails.Where(e => e.Email != email).ToArray();
-    }
 }

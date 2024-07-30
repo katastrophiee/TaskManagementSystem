@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using TaskManagement.Components.Pages.PageModels;
 using TaskManagement.Data;
 using TaskManagement.DTO.Requests.Task;
 using TaskManagement.DTO.Responses.Group;
@@ -67,5 +68,15 @@ public partial class AddTask
 
         AddTaskRequest.CreatedByUserId = User.Id;
         var success = await TaskProvider.AddTask(AddTaskRequest);
+    }
+
+    private async Task CorrectSharedToUsersAndTaskListOptions()
+    {
+        var groupId = int.Parse(GroupIdAsString);
+
+        var group = await GroupProvider.GetById(groupId);
+
+        var taskListsInGroup = await TaskListProvider.GetTaskListsByGroupId(groupId);
+        AvailableTaskLists = taskListsInGroup ?? [];
     }
 }
