@@ -23,7 +23,7 @@
 }
 
 <div class="section-header-container">
-    <h2>Add task list</h2>
+    <h2>View task list</h2>
     <a href="">
         <button class="btn-primary">◀️ Home</button>
     </a>
@@ -47,7 +47,7 @@
         </div>
 
         <div class="form-floating mb-3">
-            <InputSelect id="groups" @bind-Value="GroupIdAsString" @onchange="CorrectViewableToUsers" class="form-control" aria-required="true">
+            <InputSelect ValueExpression="@(() => GroupIdAsString)" Value="@GroupIdAsString" ValueChanged="@((string groupId) => CorrectViewableToUsers(groupId))" class="form-control" aria-required="true">
                 <option value="">None</option>
                 @foreach (var group in AvailableGroups)
                 {
@@ -58,10 +58,13 @@
             <ValidationMessage For="() => GroupIdAsString" class="text-danger" />
         </div>
 
-        <div class="form-floating mb-3">
-            <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" />
-            <button type="button" @onclick="ShareTaskListToUser">Add</button>
-        </div>
+        @if (string.IsNullOrEmpty(GroupIdAsString))
+        {
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" />
+                <button type="button" @onclick="ShareTaskListToUser">Add</button>
+            </div>
+        }
 
         @if (ViewableToUserEmails.Any())
         {

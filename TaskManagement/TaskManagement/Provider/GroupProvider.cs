@@ -1,4 +1,5 @@
 ﻿using TaskManagement.Common.Models;
+using TaskManagement.DTO.Requests.Group;
 using TaskManagement.DTO.Responses.Group;
 using TaskManagement.Interface.Provider;
 using TaskManagement.Interface.Repository;
@@ -64,6 +65,33 @@ public class GroupProvider(IGroupRepository groupRepository) : IGroupProvider
                 StatusCode = StatusCodes.Status404NotFound,
                 AdditionalDetails = ex.Message
             });
+        }
+    }
+
+    public async Task<bool> AddGroup(AddGroupRequest request)
+    {
+        try
+        {
+            var group = new Group()
+            {
+                Name = request.Name,
+                Description = request.Description,
+                CreatedByUserId = request.CreatedByUserId,
+                CreatedOn = DateTime.Now
+            };
+
+            if (!string.IsNullOrEmpty(request.ViewableToUserIds))
+            {
+                group.ViewableToUserIds = request.ViewableToUserIds;
+            }
+
+            await _groupRepository.Add(group);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return false;
         }
     }
 }

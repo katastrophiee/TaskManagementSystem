@@ -1,0 +1,84 @@
+﻿@page "/ViewGroups"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "TaskUser")]
+
+<PageTitle>Groups</PageTitle>
+
+@if (User is null)
+{
+    <Loading />
+    return;
+}
+
+@if (User.FirstName is null
+|| User.FirstName is null
+|| User.PhoneNumber is null)
+{
+    <h1 class="text-danger">You cannot view groups until your profile is complete.</h1>
+    <h4>
+        Please complete your profile <a href="Account/Manage">here</a> to continue.
+    </h4>
+    return;
+}
+
+<h1>Groups</h1>
+<hr />
+
+<br />
+
+<div class="section-header-container">
+    <h2>@User.FirstName's groups</h2>
+    <a href="AddGroup">
+        <button class="btn-primary">Add New Group</button>
+    </a>
+</div>
+<h5>These are groups created by you.</h5>
+<hr />
+
+@if (OwnedGroups is not null
+&& OwnedGroups.Any())
+{
+    @foreach (var group in OwnedGroups)
+    {
+        <div>
+            <h5>@group.Name</h5>
+            <h6>@group.Description</h6>
+
+            <a href="/ViewGroup/groupId=@group.GroupId">
+                <button class="primary">View Group</button>
+            </a>
+        </div>
+    }
+}
+else
+{
+    <p>No groups found.</p>
+}
+
+<br />
+
+<div class="section-header-container">
+    <h2>Shared groups</h2>
+</div>
+<h5>These are groups that have been shared to you</h5>
+<hr/>
+
+@if (SharedToMeGroups is not null
+&& SharedToMeGroups.Any())
+{
+    @foreach (var group in SharedToMeGroups)
+    {
+        <div>
+            <h5>@group.Name</h5>
+            <h6>@group.Description</h6>
+
+            <a href="/ViewGroup/groupId=@group.GroupId">
+                <button class="primary">View Group</button>
+            </a>
+        </div>
+    }
+}
+else
+{
+    <p>You have not been shared any groups.</p>
+}

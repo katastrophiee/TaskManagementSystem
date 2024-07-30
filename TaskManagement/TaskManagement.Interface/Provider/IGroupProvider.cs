@@ -1,4 +1,5 @@
-﻿using TaskManagement.DTO.Responses.Group;
+﻿using TaskManagement.DTO.Requests.Group;
+using TaskManagement.DTO.Responses.Group;
 
 namespace TaskManagement.Interface.Provider;
 
@@ -7,4 +8,6 @@ public interface IGroupProvider
     Task<List<GetGroupResponse>> GetOwnedOrJoinedGroups(string userId, string userEmail);
 
     Task<GetGroupResponse> GetById(int groupId);
+
+    Task<bool> AddGroup(AddGroupRequest request);
 }

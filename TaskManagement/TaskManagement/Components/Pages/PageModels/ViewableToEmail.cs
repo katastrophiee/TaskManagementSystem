@@ -8,7 +8,7 @@ public class ViewableToEmail
 
     public ViewableToEmail(string email, bool isRemoveable)
     {
-        email = Email;
-        isRemoveable = IsRemoveable;
+        Email = email;
+        IsRemoveable = isRemoveable;
     }
 }

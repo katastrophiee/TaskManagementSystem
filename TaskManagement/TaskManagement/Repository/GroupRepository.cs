@@ -15,4 +15,11 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
     }
 
     public Task<Group?> GetById(int groupId) => _dbContext.Group.FirstOrDefaultAsync(g => g.GroupId == groupId);
+
+    public async Task<bool> Add(Group group)
+    {
+        _dbContext.Group.Add(group);
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
 }

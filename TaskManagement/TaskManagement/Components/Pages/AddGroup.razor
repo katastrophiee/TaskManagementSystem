@@ -1,0 +1,56 @@
+﻿@page "/AddGroup"
+@using TaskManagement.Components.Account.Shared
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "TaskUser")]
+
+<div class="section-header-container">
+    <h2>Add a new group</h2>
+    <a href="">
+        <button class="btn-primary">◀️ Home</button> @* TO DO - Change to proper icon *@
+    </a>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="text-danger">@errorMessage</div>
+    <EditForm Model="AddGroupRequest" OnValidSubmit="AddNewGroup" FormName="add-group">
+        <DataAnnotationsValidator />
+
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="AddGroupRequest.Name" class="form-control" id="groupName" aria-required="true" placeholder="Group Name" />
+            <label for="groupName" class="form-label">Group Name</label>
+            <ValidationMessage For="() => AddGroupRequest.Name" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputTextArea @bind-Value="AddGroupRequest.Description" class="form-control" id="groupDescription" aria-required="true" placeholder="Group Description" />
+            <label for="groupDescription" class="form-label">Group Description</label>
+            <ValidationMessage For="() => AddGroupRequest.Description" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" />
+            <button type="button" @onclick="ShareGroupToUser">Add</button>
+        </div>
+
+        @if (sharedToUserEmails.Any())
+        {
+            <label class="form-label">Viewable to:</label>
+            <div class="form-floating mb-3">
+                @foreach (var emailWithState in sharedToUserEmails)
+                {
+                    <span class="email-bubble">@emailWithState.Email</span>
+                    @if (emailWithState.IsRemoveable)
+                    {
+                        <button type="button" @onclick="() => RemoveSharedToUser(emailWithState.Email)">Remove</button>
+                    }
+                }
+            </div>
+        }
+
+        <div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Add Group</button>
+        </div>
+    </EditForm>
+</div>

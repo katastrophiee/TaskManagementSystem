@@ -52,6 +52,8 @@ public partial class ViewTaskList
         User = await UserManager.FindByEmailAsync(userEmail);
 
         await GetTaskList();
+
+        AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id, userEmail);
     }
 
 
@@ -63,12 +65,16 @@ public partial class ViewTaskList
 
         if (UpdateTaskListRequest is not null && UpdateTaskListRequest.ViewableToUserIds is not null && UpdateTaskListRequest.ViewableToUserIds.Any())
             ViewableToUserEmails = UpdateTaskListRequest.ViewableToUserIds.Split(",").Select(e => new ViewableToEmail(e, UpdateTaskListRequest.GroupId is null)).ToArray();
+        
     }
 
     private async Task UpdateTaskList()
     {
         UpdateTaskListRequest.TaskListId = TaskListId;
-        UpdateTaskListRequest.ViewableToUserIds = string.Join(",", ViewableToUserEmails.Select(e => e));
+        UpdateTaskListRequest.ViewableToUserIds = string.Join(",", ViewableToUserEmails.Select(e => e.Email));
+
+        if (!string.IsNullOrEmpty(GroupIdAsString))
+            UpdateTaskListRequest.GroupId = int.Parse(GroupIdAsString);
 
         var response = await TaskListProvider.UpdateTaskList(UpdateTaskListRequest);
 
@@ -77,6 +83,8 @@ public partial class ViewTaskList
             errorMessage = "Failed to update task";
             return;
         }
+
+        // TO DO - add success message to pages to make a lil nicer
 
         await GetTaskList();
     }
@@ -152,13 +160,11 @@ public partial class ViewTaskList
         }
     }
 
-
-    //TO DO - test this :)
-    private async Task CorrectViewableToUsers()
+    private async Task CorrectViewableToUsers(string groupIdAsString)
     {
-        if (GroupIdAsString is not null && !string.IsNullOrEmpty(GroupIdAsString))
+        if (!string.IsNullOrEmpty(groupIdAsString))
         {
-            var groupId = int.Parse(GroupIdAsString);
+            var groupId = int.Parse(groupIdAsString);
 
             var group = await GroupProvider.GetById(groupId);
             if (group.ViewableToUserIds is not null && group.ViewableToUserIds.Any())
@@ -167,7 +173,12 @@ public partial class ViewTaskList
 
                 ViewableToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
             }
+
+            GroupIdAsString = groupIdAsString;
+        }
+        else
+        {
+            ViewableToUserEmails = [];
         }
     }
-
 }
