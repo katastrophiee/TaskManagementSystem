@@ -47,6 +47,7 @@
                 <ValidationMessage For="() => UpdateGroupRequest.Description" class="text-danger" />
             </div>
 
+            <div class="text-warning">@warningMessage</div>
             <div class="form-floating mb-3">
                 <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" />
                 <button type="button" @onclick="ShareTaskListToUser">Add</button>

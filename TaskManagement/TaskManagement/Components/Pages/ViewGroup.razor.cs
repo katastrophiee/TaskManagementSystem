@@ -43,6 +43,7 @@ public partial class ViewGroup
     private string CurrentUserId = "";
     private ApplicationUser? User;
     private string? errorMessage;
+    private string? warningMessage;
     private string GroupIdAsString;
     private string shareToUserEmail;
     private ViewableToEmail[] ViewableToUserEmails = [];
@@ -135,6 +136,7 @@ public partial class ViewGroup
         }
 
         ViewableToUserEmails = ViewableToUserEmails.Append(new ViewableToEmail(shareToUserEmail, true)).ToArray();
+        warningMessage = "Visibility of tasks and lists within this group WILL be changed on updating";
         shareToUserEmail = string.Empty;
         errorMessage = string.Empty;
     }

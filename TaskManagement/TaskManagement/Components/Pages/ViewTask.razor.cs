@@ -39,6 +39,7 @@ public partial class ViewTask
     private string CurrentUserId = "";
     private ApplicationUser? User;
     private string? errorMessage;
+    private string? warningMessage;
     private string TaskListIdAsString;
     private string GroupIdAsString;
     private List<GetTaskListResponse> AvailableTaskLists = [];
@@ -106,9 +107,10 @@ public partial class ViewTask
         {
             var groupId = int.Parse(groupIdAsString);
 
-            AvailableTaskLists = await TaskListProvider.GetTaskListsByGroupId(groupId);
+            AvailableTaskLists = await TaskListProvider.GetTaskListsByGroupId(groupId) ?? [];
 
             GroupIdAsString = groupIdAsString;
+            warningMessage = "Visibility of this task to other users WILL be changed to the group visibility on updating";
         }
         else
         {

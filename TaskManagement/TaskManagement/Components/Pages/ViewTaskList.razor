@@ -56,6 +56,7 @@
 
         <small>Please note that assigning the task list to a group will change it's visibility to those members</small>
 
+        <div class="text-warning">@warningMessage</div>
         <div class="form-floating mb-3">
             <InputSelect ValueExpression="@(() => GroupIdAsString)" Value="@GroupIdAsString" ValueChanged="@((string groupId) => CorrectViewableToUsers(groupId))" class="form-control" aria-required="true">
                 <option value="">None</option>

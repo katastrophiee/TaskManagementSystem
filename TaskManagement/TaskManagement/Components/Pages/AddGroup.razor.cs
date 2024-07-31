@@ -39,8 +39,6 @@ public partial class AddGroup
         User = await UserManager.FindByEmailAsync(userEmail);
     }
 
-    //TO DO - Add are you sure message when assigning task list to group as viewable user list will change
-
     private async Task AddNewGroup()
     {
         if (sharedToUserEmails.Length != 0)

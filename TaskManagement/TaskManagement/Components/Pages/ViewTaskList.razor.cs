@@ -36,6 +36,7 @@ public partial class ViewTaskList
     private string CurrentUserId = "";
     private ApplicationUser? User;
     private string? errorMessage;
+    private string? warningMessage;
     private string GroupIdAsString;
     private string shareToUserEmail;
     private ViewableToEmail[] ViewableToUserEmails = [];
@@ -67,6 +68,8 @@ public partial class ViewTaskList
         if (UpdateTaskListRequest is not null && UpdateTaskListRequest.ViewableToUserIds is not null && UpdateTaskListRequest.ViewableToUserIds.Any())
             ViewableToUserEmails = UpdateTaskListRequest.ViewableToUserIds.Split(",").Select(e => new ViewableToEmail(e, UpdateTaskListRequest.GroupId is null)).ToArray();
         
+        if (UpdateTaskListRequest.GroupId is not null)
+            GroupIdAsString = UpdateTaskListRequest.GroupId.ToString() ?? "";
     }
 
     private async Task UpdateTaskList()
@@ -172,6 +175,7 @@ public partial class ViewTaskList
                 var groupMembers = group.ViewableToUserIds.Split(",");
 
                 ViewableToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
+                warningMessage = "Visibility of this task list to other users WILL be changed to the group visibility on updating";
             }
 
             GroupIdAsString = groupIdAsString;
