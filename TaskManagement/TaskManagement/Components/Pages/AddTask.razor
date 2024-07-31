@@ -1,18 +1,26 @@
 ﻿@page "/AddTask"
+@rendermode InteractiveServer
 @using TaskManagement.Components.Account.Shared
 
 @attribute [Authorize(Roles = "TaskUser")]
 
+<PageTitle>Add Task</PageTitle>
+
+@if (User is null
+|| AddTaskRequest is null)
+{
+    <Loading />
+    return;
+}
+
 <div class="section-header-container">
     <h2>Add a new task</h2>
-    <a href="">
-        <button class="btn-primary">◀️ Home</button>
-    </a>
 </div>
 
 <hr />
 
 <div class="row">
+    <div class="text-danger">@errorMessage</div>
     <EditForm Model="AddTaskRequest" method="post" OnValidSubmit="AddNewTask" FormName="add-task">
         <DataAnnotationsValidator />
 
@@ -41,7 +49,7 @@
         </div>
 
         <div class="form-floating mb-3">
-            <InputSelect id="groups" @onchange="CorrectSharedToUsersAndTaskListOptions" @bind-Value="GroupIdAsString" class="form-control" aria-required="true">
+            <InputSelect id="groups" ValueExpression="@(() => GroupIdAsString)" Value="@GroupIdAsString" ValueChanged="@((string groupId) => CorrectSharedToUsersAndTaskListOptions(groupId))" class="form-control" aria-required="true">
                 <option value="">None</option>
                 @foreach (var group in AvailableGroups)
                 {

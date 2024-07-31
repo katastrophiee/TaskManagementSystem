@@ -3,11 +3,17 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "TaskUser")]
 
+<PageTitle>Add Group</PageTitle>
+
+@if (User is null
+|| AddGroupRequest is null)
+{
+    <Loading />
+    return;
+}
+
 <div class="section-header-container">
     <h2>Add a new group</h2>
-    <a href="">
-        <button class="btn-primary">◀️ Home</button> @* TO DO - Change to proper icon *@
-    </a>
 </div>
 
 <hr />

@@ -22,4 +22,11 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
         await _dbContext.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> Update(Group group)
+    {
+        _dbContext.Group.Update(group);
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
 }

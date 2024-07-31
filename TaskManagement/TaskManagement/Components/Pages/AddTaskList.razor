@@ -3,11 +3,17 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "TaskUser")]
 
+<PageTitle>Add Task List</PageTitle>
+
+@if (User is null
+|| AddTaskListRequest is null)
+{
+    <Loading />
+    return;
+}
+
 <div class="section-header-container">
     <h2>Add a new task list</h2>
-    <a href="">
-        <button class="btn-primary">◀️ Home</button>
-    </a>
 </div>
 
 <hr />
@@ -30,7 +36,7 @@
         </div>
 
         <div class="form-floating mb-3">
-            <InputSelect id="groups" @onchange="CorrectViewableToUsers" @bind-Value="GroupIdAsString" class="form-control" aria-required="true">
+            <InputSelect id="groups" ValueExpression="@(() => GroupIdAsString)" Value="@GroupIdAsString" ValueChanged="@((string groupId) => CorrectViewableToUsers(groupId))" class="form-control" aria-required="true">
                 <option value="">None</option>
                 @foreach (var group in AvailableGroups)
                 {

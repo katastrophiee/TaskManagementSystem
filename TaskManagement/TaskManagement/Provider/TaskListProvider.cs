@@ -3,6 +3,7 @@ using TaskManagement.DTO.Requests.TaskList;
 using TaskManagement.DTO.Responses.TaskList;
 using TaskManagement.Interface.Provider;
 using TaskManagement.Interface.Repository;
+using TaskManagement.Repository;
 
 namespace TaskManagement.Provider;
 
@@ -144,6 +145,24 @@ public class TaskListProvider(ITaskListRepository taskListRepository) : ITaskLis
                     AdditionalDetails = ex.Message
                 })
             ];
+        }
+    }
+
+    public async Task<string?> GetTaskListOwnerId(int taskListId)
+    {
+        try
+        {
+            var taskList = await _taskListRepository.GetById(taskListId);
+            if (taskList == null)
+            {
+                return null;
+            }
+
+            return taskList.CreatedByUserId;
+        }
+        catch (Exception ex)
+        {
+            return null;
         }
     }
 }

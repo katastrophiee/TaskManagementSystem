@@ -14,4 +14,6 @@ public interface ITaskProvider
     Task<bool> UpdateTask(UpdateTaskRequest updateTaskRequest);
 
     Task<List<GetTaskResponse>?> GetTasksByTaskListId(int taskListId);
+
+    Task<string?> GetTaskOwnerId(int taskId);
 }

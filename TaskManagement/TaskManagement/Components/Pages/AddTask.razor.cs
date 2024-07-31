@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using TaskManagement.Components.Pages.PageModels;
+using Microsoft.IdentityModel.Tokens;
 using TaskManagement.Data;
 using TaskManagement.DTO.Requests.Task;
 using TaskManagement.DTO.Responses.Group;
@@ -60,23 +60,40 @@ public partial class AddTask
     {
         //TO DO - Add add group and task list page then try and assign
 
-        if (TaskListIdAsString is not null)
+        if (!string.IsNullOrEmpty(TaskListIdAsString))
             AddTaskRequest.TaskListId = int.Parse(TaskListIdAsString);
 
-        if (GroupIdAsString is not null)
+        if (!string.IsNullOrEmpty(GroupIdAsString))
             AddTaskRequest.GroupId = int.Parse(GroupIdAsString);
 
         AddTaskRequest.CreatedByUserId = User.Id;
         var success = await TaskProvider.AddTask(AddTaskRequest);
+
+        if (success)
+        {
+           NavigationManager.NavigateTo("/ViewTasks");
+        }
+        else
+        {
+            errorMessage = "Failed to add task";
+        }
     }
 
-    private async Task CorrectSharedToUsersAndTaskListOptions()
+    private async Task CorrectSharedToUsersAndTaskListOptions(string groupIdAsString)
     {
-        var groupId = int.Parse(GroupIdAsString);
+        var groupId = int.Parse(groupIdAsString);
 
         var group = await GroupProvider.GetById(groupId);
 
         var taskListsInGroup = await TaskListProvider.GetTaskListsByGroupId(groupId);
-        AvailableTaskLists = taskListsInGroup ?? [];
+        //AvailableTaskLists = taskListsInGroup ?? [];
+
+        var selectedTaskListInAvailableOptions = taskListsInGroup.FirstOrDefault(t => t.TaskListId.ToString() == TaskListIdAsString);
+
+        AvailableTaskLists = taskListsInGroup;
+
+        TaskListIdAsString = selectedTaskListInAvailableOptions is null ? "" : selectedTaskListInAvailableOptions.TaskListId.ToString();
+
+        GroupIdAsString = groupIdAsString;
     }
 }

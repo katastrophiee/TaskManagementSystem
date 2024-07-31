@@ -15,4 +15,5 @@ public interface ITaskListProvider
 
     Task<List<GetTaskListResponse>?> GetTaskListsByGroupId(int groupId);
 
+    Task<string?> GetTaskListOwnerId(int taskListId);
 }

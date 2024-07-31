@@ -142,19 +142,18 @@ public partial class AddTaskList
     }
 
     //TO DO - test this :)
-    private async Task CorrectViewableToUsers()
+    private async Task CorrectViewableToUsers(string groupIdAsString)
     {
-        if (GroupIdAsString is not null && !string.IsNullOrEmpty(GroupIdAsString))
+        if (!string.IsNullOrEmpty(groupIdAsString))
         {
-            var groupId = int.Parse(GroupIdAsString);
+            var groupId = int.Parse(groupIdAsString);
 
             var group = await GroupProvider.GetById(groupId);
-            if (group.ViewableToUserIds is not null && group.ViewableToUserIds.Any())
-            {
-                var groupMembers = group.ViewableToUserIds.Split(",");
+            var groupMembers = group.ViewableToUserIds.Split(",");
 
-                sharedToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
-            }
+            sharedToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
+
+            GroupIdAsString = groupIdAsString;
         }
     }
 

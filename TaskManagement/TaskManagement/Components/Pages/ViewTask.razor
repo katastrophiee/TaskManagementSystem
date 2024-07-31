@@ -5,6 +5,8 @@
 
 @attribute [Authorize(Roles = "TaskUser")]
 
+<PageTitle>View Tasks</PageTitle>
+
 @if (User is null)
 {
     <Loading />
@@ -15,20 +17,24 @@
 || User.FirstName is null
 || User.PhoneNumber is null)
 {
-    <h1 class="text-danger">You cannot add task lists until your profile is complete.</h1>
+    <h1 class="text-danger">You cannot view task lists until your profile is complete.</h1>
     <h4>
         Please complete your profile <a href="Account/Manage">here</a> to continue.
     </h4>
     return;
 }
 
+@if (CurrentUserId != OwnedByUserId)
+{
+    <h1 class="text-danger">You do not have permission to edit this task.</h1>
+    return;
+}
+
 <div class="section-header-container">
-    <h2>Add task</h2>
-    <a href="">
-        <button class="btn-primary">◀️ Home</button>
-    </a>
-    <hr />
+    <h2>View task</h2>
 </div>
+
+<hr />
 
 <div class="row">
     <EditForm Model="UpdateTaskRequest" method="post" OnValidSubmit="UpdateTask" FormName="view-task">
@@ -57,8 +63,10 @@
             <ValidationMessage For="() => UpdateTaskRequest.TaskStatus" class="text-danger" />
         </div>
 
+        <small>Please note that assigning the task to a list or group will change it's visibility to those members</small>
+
         <div class="form-floating mb-3">
-            <InputSelect id="taskList" @bind-Value="TaskListIdAsString" class="form-control" aria-required="true">
+            <InputSelect @bind-Value="TaskListIdAsString" class="form-control" aria-required="true">
                 <option value="">None</option>
                 @foreach (var taskList in AvailableTaskLists)
                 {
@@ -68,9 +76,10 @@
             <label for="taskList" class="form-label">Add to task list (optional)</label>
             <ValidationMessage For="() => TaskListIdAsString" class="text-danger" />
         </div>
+        
 
         <div class="form-floating mb-3">
-            <InputSelect id="groups" @bind-Value="GroupIdAsString" class="form-control" aria-required="true">
+            <InputSelect ValueExpression="@(() => GroupIdAsString)" Value="@GroupIdAsString" ValueChanged="@((string groupId) => CorrectValuesOnGroupChange(groupId))" class="form-control" aria-required="true">
                 <option value="">None</option>
                 @foreach (var group in AvailableGroups)
                 {

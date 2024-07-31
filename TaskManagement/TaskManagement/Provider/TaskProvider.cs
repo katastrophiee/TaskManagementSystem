@@ -3,6 +3,7 @@ using TaskManagement.DTO.Requests.Task;
 using TaskManagement.DTO.Responses.Task;
 using TaskManagement.Interface.Provider;
 using TaskManagement.Interface.Repository;
+using TaskManagement.Repository;
 using Task = TaskManagement.Common.Models.Task;
 
 namespace TaskManagement.Provider;
@@ -142,6 +143,24 @@ public class TaskProvider(ITaskRepository taskRepository) : ITaskProvider
                     AdditionalDetails = ex.Message
                 })
             ];
+        }
+    }
+
+    public async Task<string?> GetTaskOwnerId(int taskId)
+    {
+        try
+        {
+            var task = await _taskRepository.GetById(taskId);
+            if (task == null)
+            {
+                return null;
+            }
+
+            return task.CreatedByUserId;
+        }
+        catch (Exception ex)
+        {
+            return null;
         }
     }
 }

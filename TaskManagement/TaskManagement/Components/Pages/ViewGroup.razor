@@ -1,0 +1,114 @@
+﻿@page "/ViewGroup/groupId={groupId:int}"
+@rendermode InteractiveServer
+@using TaskManagement.Components.Account.Shared
+@using TaskManagement.Common.Utils
+
+@attribute [Authorize(Roles = "TaskUser")]
+
+<PageTitle>View Group</PageTitle>
+
+@if (User is null
+|| UpdateGroupRequest is null)
+{
+    <Loading />
+    return;
+}
+
+@if (User.FirstName is null || User.PhoneNumber is null)
+{
+    <h1 class="text-danger">You cannot add task lists until your profile is complete.</h1>
+    <h4>
+        Please complete your profile <a href="Account/Manage">here</a> to continue.
+    </h4>
+    return;
+}
+
+@if (isEditing)
+{
+    @if (CurrentUserId != OwnedByUserId)
+    {
+        <h1 class="text-danger">You do not have permission to edit this group.</h1>
+        return;
+    }
+
+    <div class="row">
+        <EditForm Model="UpdateGroupRequest" method="post" OnValidSubmit="UpdateGroup" FormName="view-group">
+            <DataAnnotationsValidator />
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="UpdateGroupRequest.Name" class="form-control" id="groupName" aria-required="true" placeholder="Group Name" />
+                <label for="groupName" class="form-label">Group Name</label>
+                <ValidationMessage For="() => UpdateGroupRequest.Name" class="text-danger" />
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputTextArea @bind-Value="UpdateGroupRequest.Description" class="form-control" id="groupDescription" aria-required="true" placeholder="Group Description" />
+                <label for="groupDescription" class="form-label">Group Description</label>
+                <ValidationMessage For="() => UpdateGroupRequest.Description" class="text-danger" />
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" />
+                <button type="button" @onclick="ShareTaskListToUser">Add</button>
+            </div>
+
+            @if (ViewableToUserEmails.Any())
+            {
+                <label class="form-label">Viewable to:</label>
+                <div class="form-floating mb-3">
+                    @foreach (var emailWithState in ViewableToUserEmails)
+                    {
+                        <span class="email-bubble">@emailWithState.Email</span>
+                        @if (emailWithState.IsRemoveable)
+                        {
+                            <button type="button" @onclick="() => RemoveSharedToUser(emailWithState.Email)">Remove</button>
+                        }
+                    }
+                </div>
+            }
+
+            <div>
+                <button type="submit" class="w-100 btn btn-lg btn-primary">Update Group</button>
+            </div>
+        </EditForm>
+    </div>
+
+
+}
+else
+{
+    <div class="section-header-container">
+        <h1>@UpdateGroupRequest.Name</h1>
+        @if (CurrentUserId == OwnedByUserId)
+        {
+            <button class="btn-primary" @onclick="() => isEditing = true">Edit</button>
+        }
+    </div>
+    <h4>@UpdateGroupRequest.Description</h4>
+
+    <hr />
+
+    <div>
+        <div class="task-lists">
+            @foreach (var taskList in GroupTaskLists)
+            {
+                <div class="task-list">
+                    <h3><a href="ViewTaskList/taskListId=@taskList.TaskListId">@taskList.Name</a></h3>
+                    <p>@taskList.Description</p>
+                    <ul>
+                        @foreach (var task in TaskListsTasks.Where(t => t.TaskListId == taskList.TaskListId))
+                        {
+                            <li>
+                                <div class="d-inline-block">
+                                    <strong>@task.Name</strong><br>
+                                    <em>@task.TaskStatus</em><br>
+                                    <small>@task.Description</small>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+}

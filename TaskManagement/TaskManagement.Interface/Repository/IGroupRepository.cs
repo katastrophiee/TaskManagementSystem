@@ -9,4 +9,6 @@ public interface IGroupRepository
     Task<Group?> GetById(int groupId);
 
     Task<bool> Add(Group group);
+
+    Task<bool> Update(Group group);
 }

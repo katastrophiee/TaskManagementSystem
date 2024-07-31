@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using TaskManagement.Data;
@@ -18,17 +19,24 @@ public partial class ViewTask
     public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
     [Inject]
-    public UserManager<ApplicationUser> UserManager { get; set; }
+    public Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> UserManager { get; set; }
 
     [Inject]
     public ITaskProvider TaskProvider { get; set; }
+
+    [Inject]
+    public ITaskListProvider TaskListProvider { get; set; }
+
+    [Inject]
+    public IGroupProvider GroupProvider { get; set; }
 
     [Inject]
     public NavigationManager NavigationManager { get; set; }
 
     public UpdateTaskRequest UpdateTaskRequest { get; set; } = new();
 
-
+    private string OwnedByUserId = "";
+    private string CurrentUserId = "";
     private ApplicationUser? User;
     private string? errorMessage;
     private string TaskListIdAsString;
@@ -40,17 +48,41 @@ public partial class ViewTask
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var userEmail = authState.User.Identity.Name;
+        CurrentUserId = authState.User.Identity.GetUserId();
 
         User = await UserManager.FindByEmailAsync(userEmail);
 
         await GetTask();
+
+        OwnedByUserId = await TaskProvider.GetTaskOwnerId(TaskId) ?? "";
+
+        AvailableTaskLists = await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id, userEmail);
+        AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id, userEmail);
     }
 
     private async Task GetTask()
     {
         var task = await TaskProvider.GetTaskById(TaskId);
 
-        UpdateTaskRequest = task is null ? new() : new UpdateTaskRequest(task);
+        UpdateTaskRequest = new UpdateTaskRequest(task);
+
+        if (UpdateTaskRequest.TaskListId is not null)
+        {
+            TaskListIdAsString = UpdateTaskRequest.TaskListId.ToString();
+        }
+        else         
+        {
+            TaskListIdAsString = "";
+        }
+
+        if (UpdateTaskRequest.GroupId is not null)
+        {
+            GroupIdAsString = UpdateTaskRequest.GroupId.ToString();
+        }
+        else
+        {
+            GroupIdAsString = "";
+        }
     }
 
     private async Task UpdateTask()
@@ -66,5 +98,21 @@ public partial class ViewTask
         }
 
         await GetTask();
+    }
+
+    private async Task CorrectValuesOnGroupChange(string groupIdAsString)
+    {
+        if (!string.IsNullOrEmpty(groupIdAsString))
+        {
+            var groupId = int.Parse(groupIdAsString);
+
+            AvailableTaskLists = await TaskListProvider.GetTaskListsByGroupId(groupId);
+
+            GroupIdAsString = groupIdAsString;
+        }
+        else
+        {
+            AvailableTaskLists = (await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id, User.Email)).Where(t => t.GroupId is null).ToList();
+        }
     }
 }

@@ -10,4 +10,8 @@ public interface IGroupProvider
     Task<GetGroupResponse> GetById(int groupId);
 
     Task<bool> AddGroup(AddGroupRequest request);
+
+    Task<bool> UpdateGroup(UpdateGroupRequest request);
+
+    Task<string?> GetGroupOwnerId(int groupId);
 }

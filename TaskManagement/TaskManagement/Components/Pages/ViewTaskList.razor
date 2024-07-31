@@ -5,7 +5,10 @@
 
 @attribute [Authorize(Roles = "TaskUser")]
 
-@if (User is null)
+<PageTitle>View Task List</PageTitle>
+
+@if (User is null
+|| UpdateTaskListRequest is null)
 {
     <Loading />
     return;
@@ -22,15 +25,20 @@
     return;
 }
 
+@if (CurrentUserId != OwnedByUserId)
+{
+    <h1 class="text-danger">You do not have permission to edit this task list.</h1>
+    return;
+}
+
 <div class="section-header-container">
     <h2>View task list</h2>
-    <a href="">
-        <button class="btn-primary">◀️ Home</button>
-    </a>
-    <hr />
 </div>
 
+<hr />
+
 <div class="row">
+    <div class="text-danger">@errorMessage</div>
     <EditForm Model="UpdateTaskListRequest" method="post" OnValidSubmit="UpdateTaskList" FormName="view-task-list">
         <DataAnnotationsValidator />
 
@@ -45,6 +53,8 @@
             <label for="taskDescription" class="form-label">Task Description</label>
             <ValidationMessage For="() => UpdateTaskListRequest.Description" class="text-danger" />
         </div>
+
+        <small>Please note that assigning the task list to a group will change it's visibility to those members</small>
 
         <div class="form-floating mb-3">
             <InputSelect ValueExpression="@(() => GroupIdAsString)" Value="@GroupIdAsString" ValueChanged="@((string groupId) => CorrectViewableToUsers(groupId))" class="form-control" aria-required="true">

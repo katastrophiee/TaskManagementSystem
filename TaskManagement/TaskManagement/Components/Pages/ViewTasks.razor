@@ -3,10 +3,9 @@
 @using Common.Utils
 @attribute [Authorize(Roles = "TaskUser")]
 
-<PageTitle>Home</PageTitle>
+<PageTitle>View Tasks</PageTitle>
 
-@if (User is null
-|| Tasks is null)
+@if (User is null)
 {
     <Loading />
     return;

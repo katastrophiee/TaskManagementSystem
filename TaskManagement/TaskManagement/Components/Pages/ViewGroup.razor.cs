@@ -1,25 +1,28 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
+using TaskManagement.Components.Pages.PageModels;
 using TaskManagement.Data;
-using TaskManagement.DTO.Responses.Group;
 using TaskManagement.DTO.Responses.TaskList;
 using TaskManagement.Interface.Provider;
-using TaskManagement.DTO.Requests.TaskList;
-using TaskManagement.Components.Pages.PageModels;
+using TaskManagement.DTO.Requests.Group;
+using TaskManagement.DTO.Responses.Task;
 using Microsoft.AspNet.Identity;
 
 namespace TaskManagement.Components.Pages;
 
-public partial class ViewTaskList
+public partial class ViewGroup
 {
     [Parameter]
-    public int TaskListId { get; set; }
+    public int GroupId { get; set; }
 
     [Inject]
     public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
     [Inject]
     public Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> UserManager { get; set; }
+
+    [Inject]
+    public ITaskProvider TaskProvider { get; set; }
 
     [Inject]
     public ITaskListProvider TaskListProvider { get; set; }
@@ -30,7 +33,11 @@ public partial class ViewTaskList
     [Inject]
     public NavigationManager NavigationManager { get; set; }
 
-    public UpdateTaskListRequest UpdateTaskListRequest { get; set; } = new();
+    public UpdateGroupRequest UpdateGroupRequest { get; set; } = new();
+
+    public List<GetTaskListResponse> GroupTaskLists { get; set; } = [];
+
+    public List<GetTaskResponse> TaskListsTasks { get; set; } = [];
 
     private string OwnedByUserId = "";
     private string CurrentUserId = "";
@@ -40,7 +47,7 @@ public partial class ViewTaskList
     private string shareToUserEmail;
     private ViewableToEmail[] ViewableToUserEmails = [];
     private List<GetTaskListResponse> AvailableTaskLists = [];
-    private List<GetGroupResponse> AvailableGroups = [];
+    private bool isEditing = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,43 +57,48 @@ public partial class ViewTaskList
 
         User = await UserManager.FindByEmailAsync(userEmail);
 
-        await GetTaskList();
+        await GetGroup();
 
-        OwnedByUserId = await TaskListProvider.GetTaskListOwnerId(TaskListId) ?? "";
+        OwnedByUserId = await GroupProvider.GetGroupOwnerId(GroupId) ?? "";
 
-        AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id, userEmail);
+        GroupTaskLists = await TaskListProvider.GetTaskListsByGroupId(GroupId) ?? [];
+        foreach (var taskList in GroupTaskLists)
+        {
+            var tasks = await TaskProvider.GetTasksByTaskListId(taskList.TaskListId) ?? [];
+            TaskListsTasks.AddRange(tasks);
+        }
     }
 
-
-    private async Task GetTaskList()
+    private async Task GetGroup()
     {
-        var taskList = await TaskListProvider.GetTaskListById(TaskListId);
+        var group = await GroupProvider.GetById(GroupId);
 
-        UpdateTaskListRequest = taskList is null ? new() : new UpdateTaskListRequest(taskList);
+        UpdateGroupRequest = group is null ? new() : new UpdateGroupRequest(group);
 
-        if (UpdateTaskListRequest is not null && UpdateTaskListRequest.ViewableToUserIds is not null && UpdateTaskListRequest.ViewableToUserIds.Any())
-            ViewableToUserEmails = UpdateTaskListRequest.ViewableToUserIds.Split(",").Select(e => new ViewableToEmail(e, UpdateTaskListRequest.GroupId is null)).ToArray();
-        
+        if (UpdateGroupRequest is not null && !string.IsNullOrEmpty(UpdateGroupRequest.ViewableToUserIds))
+            ViewableToUserEmails = UpdateGroupRequest.ViewableToUserIds.Split(",").Select(e => new ViewableToEmail(e, true)).ToArray();
     }
 
-    private async Task UpdateTaskList()
+    private async Task UpdateGroup()
     {
-        UpdateTaskListRequest.TaskListId = TaskListId;
-        UpdateTaskListRequest.ViewableToUserIds = string.Join(",", ViewableToUserEmails.Select(e => e.Email));
+        UpdateGroupRequest.ViewableToUserIds = string.Join(",", ViewableToUserEmails.Select(e => e.Email));
 
         if (!string.IsNullOrEmpty(GroupIdAsString))
-            UpdateTaskListRequest.GroupId = int.Parse(GroupIdAsString);
+            UpdateGroupRequest.GroupId = int.Parse(GroupIdAsString);
 
-        var success = await TaskListProvider.UpdateTaskList(UpdateTaskListRequest);
-        if (success)
+        var response = await GroupProvider.UpdateGroup(UpdateGroupRequest);
+
+        if (response is false)
         {
-            NavigationManager.NavigateTo("/ViewTaskLists");
-        }
-        else
-        {
-            errorMessage = "An unknown error occured when updating task";
+            errorMessage = "Failed to update task";
             return;
         }
+
+        // TO DO - add success message to pages to make a lil nicer
+
+        isEditing = false;
+
+        await GetGroup();
     }
 
     private async Task ShareTaskListToUser()
@@ -160,7 +172,8 @@ public partial class ViewTaskList
         }
     }
 
-    private async Task CorrectViewableToUsers(string groupIdAsString)
+    //reassign viewable to users for the task list 
+    private async Task CorrectViewableToUsersForBelongingItems(string groupIdAsString)
     {
         if (!string.IsNullOrEmpty(groupIdAsString))
         {

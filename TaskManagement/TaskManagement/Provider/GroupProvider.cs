@@ -94,4 +94,48 @@ public class GroupProvider(IGroupRepository groupRepository) : IGroupProvider
             return false;
         }
     }
+
+    public async Task<bool> UpdateGroup(UpdateGroupRequest request)
+    {
+        try
+        {
+            var group = new Group()
+            {
+                GroupId = request.GroupId,
+                Name = request.Name,
+                Description = request.Description,
+            };
+
+            if (!string.IsNullOrEmpty(request.ViewableToUserIds))
+            {
+                group.ViewableToUserIds = request.ViewableToUserIds;
+            }
+
+            await _groupRepository.Update(group);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
+    public async Task<string?> GetGroupOwnerId(int groupId)
+    {
+        try
+        {
+            var group = await _groupRepository.GetById(groupId);
+            if (group == null)
+            {
+                return null;
+            }
+
+            return group.CreatedByUserId;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
 }
