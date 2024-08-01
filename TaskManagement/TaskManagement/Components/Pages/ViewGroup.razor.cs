@@ -116,8 +116,6 @@ public partial class ViewGroup
             return;
         }
 
-        // TO DO - add success message to pages to make a lil nicer
-
         isEditing = false;
 
         await GetGroup();
@@ -196,7 +194,6 @@ public partial class ViewGroup
         }
     }
 
-    //reassign viewable to users for the task list 
     private async Task CorrectViewableToUsersForBelongingItems(string groupIdAsString)
     {
         if (!string.IsNullOrEmpty(groupIdAsString))

@@ -53,8 +53,6 @@ public partial class AddTaskList
 
     private async Task AddNewTaskList()
     {
-        //TO DO - Add add group and task list page then try and assign
-
         if (GroupIdAsString is not null)
             AddTaskListRequest.GroupId = int.Parse(GroupIdAsString);
 
@@ -73,8 +71,6 @@ public partial class AddTaskList
             errorMessage = "An error occured when adding this task list. Please try again later.";
         }
     }
-
-    //if group is selected, lock the manual field and auto set the shared to users to the group members
 
     private async Task ShareTaskListToUser()
     {

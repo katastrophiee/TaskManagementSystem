@@ -30,8 +30,6 @@ public partial class AddTask
     [Inject]
     public NavigationManager NavigationManager { get; set; }
 
-    //TO DO - add listof task lists and groups to select from when assigning a task to either one
-
     [SupplyParameterFromForm]
     private AddTaskRequest AddTaskRequest { get; set; } = new();
 
@@ -57,8 +55,6 @@ public partial class AddTask
 
     private async Task AddNewTask()
     {
-        //TO DO - Add add group and task list page then try and assign
-
         if (!string.IsNullOrEmpty(TaskListIdAsString))
             AddTaskRequest.TaskListId = int.Parse(TaskListIdAsString);
 

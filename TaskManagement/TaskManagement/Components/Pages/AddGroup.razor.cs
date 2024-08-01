@@ -57,8 +57,6 @@ public partial class AddGroup
         }
     }
 
-    //TO DO - if group is selected, lock the manual field and auto set the shared to users to the group members
-    //TO DO - make it so users who are not group owner cannot edit the group + task lists same
     private async Task ShareGroupToUser()
     {
         if (shareToUserEmail == User.Email)
