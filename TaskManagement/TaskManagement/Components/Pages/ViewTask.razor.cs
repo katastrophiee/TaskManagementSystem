@@ -91,9 +91,13 @@ public partial class ViewTask
 
         if (!string.IsNullOrEmpty(TaskListIdAsString))
             UpdateTaskRequest.TaskListId = int.Parse(TaskListIdAsString);
+        else
+            UpdateTaskRequest.TaskListId = null;
 
         if (!string.IsNullOrEmpty(GroupIdAsString))
             UpdateTaskRequest.GroupId = int.Parse(GroupIdAsString);
+        else
+            UpdateTaskRequest.GroupId = null;
 
         var response = await TaskProvider.UpdateTask(UpdateTaskRequest);
 

@@ -79,6 +79,8 @@ public partial class ViewTaskList
 
         if (!string.IsNullOrEmpty(GroupIdAsString))
             UpdateTaskListRequest.GroupId = int.Parse(GroupIdAsString);
+        else
+            UpdateTaskListRequest.GroupId = null;
 
         var success = await TaskListProvider.UpdateTaskList(UpdateTaskListRequest);
         if (success)
@@ -166,7 +168,7 @@ public partial class ViewTaskList
 
     private async Task CorrectViewableToUsers(string groupIdAsString)
     {
-        if (!string.IsNullOrEmpty(groupIdAsString))
+        if (string.IsNullOrEmpty(groupIdAsString))
         {
             warningMessage = "";
             GroupIdAsString = "";

@@ -213,6 +213,7 @@ public partial class ViewGroup
         else
         {
             ViewableToUserEmails = [];
+            GroupIdAsString = "";
         }
     }
 }
