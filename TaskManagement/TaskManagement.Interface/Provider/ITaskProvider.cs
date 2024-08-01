@@ -16,4 +16,6 @@ public interface ITaskProvider
     Task<List<GetTaskResponse>?> GetTasksByTaskListId(int taskListId);
 
     Task<string?> GetTaskOwnerId(int taskId);
+
+    Task<List<GetTaskResponse>?> GetUnlistedTasksByGroupId(int groupId);
 }

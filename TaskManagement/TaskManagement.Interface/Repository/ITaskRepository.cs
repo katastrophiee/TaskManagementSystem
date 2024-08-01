@@ -11,4 +11,7 @@ public interface ITaskRepository
     Task Update(Common.Models.Task task);
 
     Task<List<Common.Models.Task>> GetListByTaskListId(int taskListId);
+
+    Task<List<Common.Models.Task>> GetListByGroupId(int groupId);
+
 }

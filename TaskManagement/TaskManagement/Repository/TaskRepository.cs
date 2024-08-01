@@ -25,4 +25,5 @@ public class TaskRepository(ApplicationDbContext dbContext) : ITaskRepository
 
     public async Task<List<Common.Models.Task>> GetListByTaskListId(int taskListId) => await _dbContext.Task.Where(t => t.TaskListId == taskListId).ToListAsync();
 
+    public async Task<List<Common.Models.Task>> GetListByGroupId(int groupId) => await _dbContext.Task.Where(t => t.GroupId == groupId).ToListAsync();
 }

@@ -163,5 +163,32 @@ public class TaskProvider(ITaskRepository taskRepository) : ITaskProvider
             return null;
         }
     }
+
+    public async Task<List<GetTaskResponse>?> GetUnlistedTasksByGroupId(int groupId)
+    {
+        try
+        {
+            var tasks = await _taskRepository.GetListByGroupId(groupId) ?? [];
+
+            var unlistedTasks = tasks.Where(t => t.TaskListId == null).ToList();
+
+            var response = unlistedTasks.Select(t => new GetTaskResponse(t));
+
+            return response.ToList();
+        }
+        catch (Exception ex)
+        {
+            return
+            [
+                new(new ErrorResponse()
+                {
+                    Title = "An unknown error occured",
+                    Description = $"An unknown error occured when trying to get unlisted tasks for group {groupId}",
+                    StatusCode = StatusCodes.Status404NotFound,
+                    AdditionalDetails = ex.Message
+                })
+            ];
+        }
+    }
 }
 

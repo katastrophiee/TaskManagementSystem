@@ -39,6 +39,7 @@ public partial class ViewGroup
     public List<GetTaskListResponse> GroupTaskLists { get; set; } = [];
 
     public List<GetTaskResponse> TaskListsTasks { get; set; } = [];
+    public List<GetTaskResponse> UnlistedTasks { get; set; } = [];
 
     private string OwnedByUserId = "";
     private string CurrentUserId = "";
@@ -69,6 +70,8 @@ public partial class ViewGroup
             var tasks = await TaskProvider.GetTasksByTaskListId(taskList.TaskListId) ?? [];
             TaskListsTasks.AddRange(tasks);
         }
+
+        UnlistedTasks = await TaskProvider.GetUnlistedTasksByGroupId(GroupId) ?? [];
     }
 
     private async Task GetGroup()

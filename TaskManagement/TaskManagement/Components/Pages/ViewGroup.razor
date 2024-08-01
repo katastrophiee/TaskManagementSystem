@@ -112,4 +112,22 @@ else
             }
         </div>
     </div>
+
+    <div>
+        <h3>Unlisted Tasks</h3>
+        <div class="task-lists">
+            <ul>
+                @foreach (var task in UnlistedTasks)
+                {
+                    <li>
+                        <div class="d-inline-block">
+                            <strong>@task.Name</strong><br>
+                            <em>Status: @task.TaskStatus</em><br>
+                            <small>@task.Description</small>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
 }
