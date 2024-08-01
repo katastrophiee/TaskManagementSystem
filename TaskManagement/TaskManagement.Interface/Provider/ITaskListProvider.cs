@@ -9,7 +9,7 @@ public interface ITaskListProvider
 
     Task<bool> AddTaskList(AddTaskListRequest request);
 
-    Task<GetTaskListResponse> GetTaskListById(int taskListId);
+    Task<GetTaskListResponse> GetById(int taskListId);
 
     Task<bool> UpdateTaskList(UpdateTaskListRequest request);
 

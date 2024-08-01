@@ -67,7 +67,8 @@ public partial class AddGroup
             return;
         }
 
-        if (sharedToUserEmails.Where(e => e.Email == shareToUserEmail).Any())
+        var existingSharedToUser = sharedToUserEmails.Where(e => e.Email == shareToUserEmail).FirstOrDefault();
+        if (existingSharedToUser is not null)
         {
             errorMessage = "You have already shared this group with this user";
             return;

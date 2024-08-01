@@ -62,7 +62,7 @@ public class TaskListProvider(ITaskListRepository taskListRepository) : ITaskLis
         }
     }
 
-    public async Task<GetTaskListResponse> GetTaskListById(int taskListId)
+    public async Task<GetTaskListResponse> GetById(int taskListId)
     {
 
         try

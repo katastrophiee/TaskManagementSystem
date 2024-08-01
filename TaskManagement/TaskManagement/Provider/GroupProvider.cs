@@ -1,4 +1,5 @@
-﻿using TaskManagement.Common.Models;
+﻿using System.Threading.Tasks;
+using TaskManagement.Common.Models;
 using TaskManagement.DTO.Requests.Group;
 using TaskManagement.DTO.Responses.Group;
 using TaskManagement.Interface.Provider;
@@ -99,17 +100,18 @@ public class GroupProvider(IGroupRepository groupRepository) : IGroupProvider
     {
         try
         {
-            var group = new Group()
-            {
-                GroupId = request.GroupId,
-                Name = request.Name,
-                Description = request.Description,
-            };
+            var group = await _groupRepository.GetById(request.GroupId);
+            if (group is null)
+                return false;
+
+            if (request.Name is not null)
+                group.Name = request.Name;
+
+            if (request.Description is not null)
+                group.Description = request.Description;
 
             if (!string.IsNullOrEmpty(request.ViewableToUserIds))
-            {
                 group.ViewableToUserIds = request.ViewableToUserIds;
-            }
 
             await _groupRepository.Update(group);
 

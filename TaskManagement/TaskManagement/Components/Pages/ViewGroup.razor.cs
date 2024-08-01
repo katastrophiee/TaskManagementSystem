@@ -7,6 +7,7 @@ using TaskManagement.Interface.Provider;
 using TaskManagement.DTO.Requests.Group;
 using TaskManagement.DTO.Responses.Task;
 using Microsoft.AspNet.Identity;
+using TaskManagement.DTO.Requests.TaskList;
 
 namespace TaskManagement.Components.Pages;
 
@@ -42,8 +43,8 @@ public partial class ViewGroup
     private string OwnedByUserId = "";
     private string CurrentUserId = "";
     private ApplicationUser? User;
-    private string? errorMessage;
-    private string? warningMessage;
+    private string? errorMessage = "";
+    private string? warningMessage = "";
     private string GroupIdAsString;
     private string shareToUserEmail;
     private ViewableToEmail[] ViewableToUserEmails = [];
@@ -82,7 +83,24 @@ public partial class ViewGroup
 
     private async Task UpdateGroup()
     {
-        UpdateGroupRequest.ViewableToUserIds = string.Join(",", ViewableToUserEmails.Select(e => e.Email));
+        if (ViewableToUserEmails.Any())
+        {
+            var newAssignedToUsers = string.Join(",", ViewableToUserEmails.Select(e => e.Email));
+            if (UpdateGroupRequest.ViewableToUserIds != newAssignedToUsers)
+            {
+                var taskListsToUpdate = await TaskListProvider.GetTaskListsByGroupId(GroupId) ?? [];
+
+                foreach (var taskList in taskListsToUpdate)
+                {
+                    var taskListUpdateRequest = new UpdateTaskListRequest(taskList);
+                    taskListUpdateRequest.ViewableToUserIds = newAssignedToUsers;
+
+                    await TaskListProvider.UpdateTaskList(taskListUpdateRequest);
+                }
+            }
+            
+            UpdateGroupRequest.ViewableToUserIds = newAssignedToUsers;
+        }
 
         if (!string.IsNullOrEmpty(GroupIdAsString))
             UpdateGroupRequest.GroupId = int.Parse(GroupIdAsString);
@@ -116,7 +134,8 @@ public partial class ViewGroup
             return;
         }
 
-        if (ViewableToUserEmails.Select(e => e.Email == shareToUserEmail).Any())
+        var existingSharedToUser = ViewableToUserEmails.Where(e => e.Email == shareToUserEmail).FirstOrDefault();
+        if (existingSharedToUser is not null)
         {
             errorMessage = "You have already shared this task list with this user";
             return;

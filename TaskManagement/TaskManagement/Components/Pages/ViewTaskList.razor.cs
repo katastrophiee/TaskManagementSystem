@@ -61,7 +61,7 @@ public partial class ViewTaskList
 
     private async Task GetTaskList()
     {
-        var taskList = await TaskListProvider.GetTaskListById(TaskListId);
+        var taskList = await TaskListProvider.GetById(TaskListId);
 
         UpdateTaskListRequest = taskList is null ? new() : new UpdateTaskListRequest(taskList);
 
@@ -106,7 +106,8 @@ public partial class ViewTaskList
             return;
         }
 
-        if (ViewableToUserEmails.Select(e => e.Email == shareToUserEmail).Any())
+        var existingSharedToUser = ViewableToUserEmails.Where(e => e.Email == shareToUserEmail).FirstOrDefault();
+        if (existingSharedToUser is not null)
         {
             errorMessage = "You have already shared this task list with this user";
             return;
@@ -167,22 +168,23 @@ public partial class ViewTaskList
     {
         if (!string.IsNullOrEmpty(groupIdAsString))
         {
-            var groupId = int.Parse(groupIdAsString);
-
-            var group = await GroupProvider.GetById(groupId);
-            if (group.ViewableToUserIds is not null && group.ViewableToUserIds.Any())
-            {
-                var groupMembers = group.ViewableToUserIds.Split(",");
-
-                ViewableToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
-                warningMessage = "Visibility of this task list to other users WILL be changed to the group visibility on updating";
-            }
-
-            GroupIdAsString = groupIdAsString;
-        }
-        else
-        {
+            warningMessage = "";
+            GroupIdAsString = "";
             ViewableToUserEmails = [];
+            return;
         }
+
+        var groupId = int.Parse(groupIdAsString);
+
+        var group = await GroupProvider.GetById(groupId);
+        if (!string.IsNullOrEmpty(group.ViewableToUserIds))
+        {
+            var groupMembers = group.ViewableToUserIds.Split(",");
+
+            ViewableToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
+        }
+
+        GroupIdAsString = groupIdAsString;
+        warningMessage = "Viewable users have been set to users within the group you assigned the task list to.";
     }
 }

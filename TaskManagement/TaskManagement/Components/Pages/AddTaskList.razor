@@ -35,6 +35,7 @@
             <ValidationMessage For="() => AddTaskListRequest.Description" class="text-danger" />
         </div>
 
+        <div class="text-warning">@warningMessage</div>
         <div class="form-floating mb-3">
             <InputSelect id="groups" ValueExpression="@(() => GroupIdAsString)" Value="@GroupIdAsString" ValueChanged="@((string groupId) => CorrectViewableToUsers(groupId))" class="form-control" aria-required="true">
                 <option value="">None</option>
@@ -47,10 +48,13 @@
             <ValidationMessage For="() => GroupIdAsString" class="text-danger" />
         </div>
 
-        <div class="form-floating mb-3">
-            <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" /> @* @onkeydown="HandleKeyPress" *@
-            <button type="button" @onclick="ShareTaskListToUser">Add</button>
-        </div>
+        @if (string.IsNullOrEmpty(GroupIdAsString))
+        {
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="shareToUserEmail" placeholder="Enter email" />
+                <button type="button" @onclick="ShareTaskListToUser">Add</button>
+            </div>
+        }   
 
         @if (sharedToUserEmails.Any())
         {

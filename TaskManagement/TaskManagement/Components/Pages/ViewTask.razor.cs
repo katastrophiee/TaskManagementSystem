@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using TaskManagement.Data;
 using TaskManagement.DTO.Requests.Task;
 using TaskManagement.DTO.Responses.Group;
@@ -90,6 +89,12 @@ public partial class ViewTask
     {
         UpdateTaskRequest.TaskId = TaskId;
 
+        if (!string.IsNullOrEmpty(TaskListIdAsString))
+            UpdateTaskRequest.TaskListId = int.Parse(TaskListIdAsString);
+
+        if (!string.IsNullOrEmpty(GroupIdAsString))
+            UpdateTaskRequest.GroupId = int.Parse(GroupIdAsString);
+
         var response = await TaskProvider.UpdateTask(UpdateTaskRequest);
 
         if (response is false)
@@ -101,20 +106,64 @@ public partial class ViewTask
         await GetTask();
     }
 
-    private async Task CorrectValuesOnGroupChange(string groupIdAsString)
+    private async Task CorrectSharedToUsersAndGroupOption(string taskListIdAsString)
     {
-        if (!string.IsNullOrEmpty(groupIdAsString))
+        if (string.IsNullOrEmpty(taskListIdAsString))
         {
-            var groupId = int.Parse(groupIdAsString);
+            TaskListIdAsString = "";
+            AvailableTaskLists = await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id, User.Email);
+            AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id, User.Email);
+            return;
+        }
 
-            AvailableTaskLists = await TaskListProvider.GetTaskListsByGroupId(groupId) ?? [];
+        var taskListId = int.Parse(taskListIdAsString);
 
-            GroupIdAsString = groupIdAsString;
-            warningMessage = "Visibility of this task to other users WILL be changed to the group visibility on updating";
+        var taskList = await TaskListProvider.GetById(taskListId);
+
+        if (taskList.GroupId is not null)
+        {
+            var groupContainingTaskList = await GroupProvider.GetById(taskList.GroupId.Value);
+
+            AvailableGroups = [groupContainingTaskList];
+            GroupIdAsString = taskList.GroupId.Value.ToString();
         }
         else
         {
-            AvailableTaskLists = (await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id, User.Email)).Where(t => t.GroupId is null).ToList();
+            AvailableGroups = [];
         }
+
+        TaskListIdAsString = taskListIdAsString;
+    }
+
+
+    private async Task CorrectValuesOnGroupChange(string groupIdAsString)
+    {
+        if (string.IsNullOrEmpty(groupIdAsString))
+        {
+            if (!string.IsNullOrEmpty(TaskListIdAsString))
+            {
+                warningMessage = "Task list is part of this group, therefore the group cannot be deselected.";
+                return;
+            }
+
+            GroupIdAsString = "";
+            AvailableTaskLists = await TaskListProvider.GetOwnedOrJoinedTaskLists(User.Id, User.Email);
+            AvailableGroups = await GroupProvider.GetOwnedOrJoinedGroups(User.Id, User.Email);
+            return;
+        }
+
+        var groupId = int.Parse(groupIdAsString);
+
+        var group = await GroupProvider.GetById(groupId);
+
+        var taskListsInGroup = await TaskListProvider.GetTaskListsByGroupId(groupId);
+
+        var selectedTaskListInAvailableOptions = taskListsInGroup.FirstOrDefault(t => t.TaskListId.ToString() == TaskListIdAsString);
+
+        AvailableTaskLists = taskListsInGroup;
+
+        TaskListIdAsString = selectedTaskListInAvailableOptions is null ? "" : selectedTaskListInAvailableOptions.TaskListId.ToString();
+
+        GroupIdAsString = groupIdAsString;
     }
 }

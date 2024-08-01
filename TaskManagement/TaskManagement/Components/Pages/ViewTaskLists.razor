@@ -33,7 +33,7 @@
     </a>
 </div>
 <h5>These are tasks lists created by you.</h5>
-<hr />
+
 
 @if (OwnedTaskLists is not null
 && OwnedTaskLists.Any())
@@ -45,17 +45,33 @@
             var group = GroupsContainingReturnedTaskLists.Where(g => g.GroupId == taskList.GroupId).FirstOrDefault();
             <div>Part of group @group.Name</div>
         }
-        <div class="task-list-container">
-            <h5>@taskList.Name</h5>
-            <h6>@taskList.Description</h6>
+        <div>
+            <div class="section-header-container">
+                <div>
+                    <h5>@taskList.Name</h5>
+                    <h6>@taskList.Description</h6>
+                </div>
+                <a href="/ViewTaskList/taskListId=@taskList.TaskListId">
+                    <button class="primary">View Task List</button>
+                </a>
+            </div>
+            <hr />
+            @if (!(TasksInTaskLists?.Where(t => t.TaskListId == taskList.TaskListId) ?? []).Any())
+            {
+                <p>No tasks found in this task list.</p>
+            }
             @foreach (var task in TasksInTaskLists?.Where(t => t.TaskListId == taskList.TaskListId) ?? [])
             {
-                <div class="task-item">@task.Name</div>
+                <li>
+                    <div class="d-inline-block">
+                        <strong>@task.Name</strong><br>
+                        <em>Status: @task.TaskStatus</em><br>
+                        <small>@task.Description</small>
+                    </div>
+                </li>
             }
-
-            <a href="/ViewTaskList/taskListId=@taskList.TaskListId">
-                <button class="primary">View Task List</button>
-            </a>
+            <br />
+            <hr />
         </div>
     }
 }
@@ -77,13 +93,38 @@ else
 {
     @foreach (var taskList in SharedToMeUserTaskLists)
     {
-        <div class="task-list-container">
-            <h5>@taskList.Name</h5>
-            <h6>@taskList.Description</h6>
+        @if (taskList.GroupId is not null)
+        {
+            var group = GroupsContainingReturnedTaskLists.Where(g => g.GroupId == taskList.GroupId).FirstOrDefault();
+            <div>Part of group @group.Name</div>
+        }
+        <div>
+            <div class="section-header-container">
+                <div>
+                    <h5>@taskList.Name</h5>
+                    <h6>@taskList.Description</h6>
+                </div>
+                <a href="/ViewTaskList/taskListId=@taskList.TaskListId">
+                    <button class="primary">View Task List</button>
+                </a>
+            </div>
+            <hr />
+            @if (!(TasksInTaskLists?.Where(t => t.TaskListId == taskList.TaskListId) ?? []).Any())
+            {
+                <p>No tasks found in this task list.</p>
+            }
             @foreach (var task in TasksInTaskLists?.Where(t => t.TaskListId == taskList.TaskListId) ?? [])
             {
-                <div class="task-container">@task.Name</div>
+                <li>
+                    <div class="d-inline-block">
+                        <strong>@task.Name</strong><br>
+                        <em>Status: @task.TaskStatus</em><br>
+                        <small>@task.Description</small>
+                    </div>
+                </li>
             }
+            <br />
+            <hr />
         </div>
     }
 }

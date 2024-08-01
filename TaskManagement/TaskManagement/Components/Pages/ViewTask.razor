@@ -67,7 +67,7 @@
 
         <div class="text-warning">@warningMessage</div>
         <div class="form-floating mb-3">
-            <InputSelect @bind-Value="TaskListIdAsString" class="form-control" aria-required="true">
+            <InputSelect id="taskList" ValueExpression="@(() => TaskListIdAsString)" Value="@TaskListIdAsString" ValueChanged="@((string taskListId) => CorrectSharedToUsersAndGroupOption(taskListId))" class="form-control" aria-required="true">
                 <option value="">None</option>
                 @foreach (var taskList in AvailableTaskLists)
                 {

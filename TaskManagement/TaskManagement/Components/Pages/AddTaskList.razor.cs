@@ -36,6 +36,7 @@ public partial class AddTaskList
     private ApplicationUser? User { get; set; }
 
     private string? errorMessage;
+    private string? warningMessage;
     private List<GetGroupResponse> AvailableGroups = [];
     private ViewableToEmail[] sharedToUserEmails = [];
     private string shareToUserEmail = "";
@@ -83,7 +84,8 @@ public partial class AddTaskList
             return;
         }
 
-        if (sharedToUserEmails.Where(e => e.Email == shareToUserEmail).Any())
+        var existingSharedToUser = sharedToUserEmails.Where(e => e.Email == shareToUserEmail).FirstOrDefault();
+        if (existingSharedToUser is not null)
         {
             errorMessage = "You have already shared this task list with this user";
             return;
@@ -141,20 +143,28 @@ public partial class AddTaskList
         }
     }
 
-    //TO DO - test this :)
     private async Task CorrectViewableToUsers(string groupIdAsString)
     {
-        if (!string.IsNullOrEmpty(groupIdAsString))
+        if (string.IsNullOrEmpty(groupIdAsString))
         {
-            var groupId = int.Parse(groupIdAsString);
+            warningMessage = "";
+            GroupIdAsString = "";
+            sharedToUserEmails = [];
+            return;
+        }
 
-            var group = await GroupProvider.GetById(groupId);
+        var groupId = int.Parse(groupIdAsString);
+
+        var group = await GroupProvider.GetById(groupId);
+        if (!string.IsNullOrEmpty(group.ViewableToUserIds))
+        {
             var groupMembers = group.ViewableToUserIds.Split(",");
 
             sharedToUserEmails = groupMembers.Select(x => new ViewableToEmail(x, false)).ToArray();
-
-            GroupIdAsString = groupIdAsString;
         }
+
+        GroupIdAsString = groupIdAsString;
+        warningMessage = "Viewable users have been set to users within the group you assigned the task list to.";
     }
 
     private void RemoveSharedToUser(string email)
