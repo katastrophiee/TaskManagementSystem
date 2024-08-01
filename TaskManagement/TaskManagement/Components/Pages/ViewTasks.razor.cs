@@ -34,6 +34,6 @@ public partial class ViewTasks
 
         var userTasks = await TaskProvider.GetTasksByUserId(User.Id);
 
-        Tasks = userTasks;
+        Tasks = userTasks.Where(t => t.TaskListId == null && t.GroupId == null).ToList();
     }
 }
