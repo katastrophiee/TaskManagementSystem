@@ -25,13 +25,13 @@
 
         <div class="form-floating mb-3">
             <InputText @bind-Value="AddTaskListRequest.Name" class="form-control" id="taskListName" aria-required="true" placeholder="Task List Name" />
-            <label for="taskListName" class="form-label">Task Name</label>
+            <label for="taskListName" class="form-label">Task List Name</label>
             <ValidationMessage For="() => AddTaskListRequest.Name" class="text-danger" />
         </div>
 
         <div class="form-floating mb-3">
             <InputTextArea @bind-Value="AddTaskListRequest.Description" class="form-control" id="taskListDescription" aria-required="true" placeholder="Task List Description" />
-            <label for="taskListDescription" class="form-label">Task Description</label>
+            <label for="taskListDescription" class="form-label">Task List Description</label>
             <ValidationMessage For="() => AddTaskListRequest.Description" class="text-danger" />
         </div>
 

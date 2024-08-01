@@ -103,6 +103,8 @@ public partial class ViewTask
             return;
         }
 
+        NavigationManager.NavigateTo($"/ViewTasks");
+
         await GetTask();
     }
 
