@@ -11,6 +11,17 @@
     return;
 }
 
+@if (User.FirstName is null
+|| User.FirstName is null
+|| User.PhoneNumber is null)
+{
+    <h1 class="text-danger">You cannot view tasks until your profile is complete.</h1>
+    <h4>
+        Please complete your profile <a href="Account/Manage">here</a> to continue.
+    </h4>
+    return;
+}
+
 <div class="section-header-container">
     <h2>@User.FirstName's tasks</h2>
     <a href="AddTask">
